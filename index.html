@@ -7,21 +7,23 @@
 <meta name="description" content="圆周率 π 的几何意义、割圆术、蒲丰投针与历史。可交互的数学科普单页。">
 <style>
   :root{
-    --bg:#f7f5f1; --paper:#fffdf9; --ink:#1c1917; --muted:#78716c;
-    --line:#e7e1d8; --accent:#b45309; --accent2:#0f766e; --soft:#fdf3e7;
-    --shadow:0 10px 40px rgba(60,45,25,.08);
+    --bg:#ffffff; --paper:#ffffff; --ink:#111111; --muted:#6f6f6f;
+    --line:#e4e4e4; --accent:#111111; --accent2:#2b2b2b; --soft:#f5f5f5;
+    --shadow:0 8px 30px rgba(0,0,0,.06);
+    --display:"STZhongsong","华文中宋","Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Songti SC","Noto Serif SC",Georgia,"Microsoft YaHei",serif;
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
     line-height:1.85;-webkit-font-smoothing:antialiased}
-  .serif{font-family:"Songti SC","Noto Serif SC",Georgia,serif}
+  h1,h2,h3,h4,.pi-big,.brand{font-family:var(--display);font-weight:700;letter-spacing:.02em}
+  .serif{font-family:var(--display)}
   .sans{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
 
   /* 顶部 */
   .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
-    background:rgba(247,245,241,.82);border-bottom:1px solid var(--line)}
+    background:rgba(255,255,255,.86);border-bottom:1px solid var(--line)}
   .topbar .inner{max-width:1080px;margin:0 auto;padding:12px 22px;display:flex;
     align-items:center;justify-content:space-between;gap:16px}
   .brand{font-weight:700;font-size:17px;letter-spacing:.5px}
@@ -31,15 +33,19 @@
   nav a:hover{color:var(--accent)}
   @media(max-width:720px){nav{display:none}}
 
-  /* 首屏 */
-  header.hero{max-width:1080px;margin:0 auto;padding:70px 22px 40px;text-align:center}
-  .pi-big{font-size:clamp(64px,16vw,150px);line-height:1;color:var(--accent);
-    font-family:Georgia,serif;margin:0;letter-spacing:2px}
-  .hero h1{font-size:clamp(22px,4vw,34px);margin:14px 0 8px;font-weight:700}
-  .hero p{color:var(--muted);max-width:640px;margin:0 auto;font-size:16px}
-  .digits-box{margin:30px auto 0;max-width:760px;font-family:Consolas,monospace;
+  /* 首屏：左对齐 + 不对称两栏 */
+  header.hero{max-width:1080px;margin:0 auto;padding:66px 22px 34px;text-align:left}
+  .hero-grid{display:grid;grid-template-columns:auto 1fr;gap:clamp(22px,5vw,64px);align-items:center}
+  @media(max-width:700px){.hero-grid{grid-template-columns:1fr;gap:6px}}
+  .pi-big{font-size:clamp(92px,16vw,176px);line-height:.86;color:var(--accent);
+    font-family:var(--display);margin:0;font-weight:700}
+  .hero h1{font-size:clamp(26px,3.6vw,44px);margin:0 0 10px;font-weight:700;letter-spacing:.06em;line-height:1.25}
+  .hero .sub{color:var(--muted);max-width:560px;margin:0;font-size:16px;line-height:1.8}
+  .hero-mark{width:44px;height:3px;background:var(--accent);margin:0 0 14px}
+  .digits-box{margin:36px 0 0;max-width:860px;font-family:Consolas,monospace;
     font-size:17px;letter-spacing:1.5px;color:var(--accent2);background:var(--paper);
-    border:1px solid var(--line);border-radius:14px;padding:18px 22px;word-break:break-all;
+    border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:4px 14px 14px 4px;padding:18px 22px;word-break:break-all;
     box-shadow:var(--shadow)}
   .digits-box b{color:var(--accent);font-weight:400}
 
@@ -65,7 +71,7 @@
   /* 交互区 */
   .lab{display:grid;grid-template-columns:1fr 320px;gap:22px}
   @media(max-width:860px){.lab{grid-template-columns:1fr}}
-  canvas{width:100%;height:360px;display:block;border-radius:12px;background:#fffdf9}
+  canvas{width:100%;height:360px;display:block;border-radius:12px;background:#fff}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .stat{background:var(--soft);border-radius:10px;padding:12px 14px}
   .stat .k{font-size:12px;color:var(--muted);font-family:"Segoe UI",sans-serif}
@@ -79,8 +85,8 @@
   .btn-main:hover{filter:brightness(1.08)}
   .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
   .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-  .bar{height:9px;border-radius:6px;background:#efe9df;overflow:hidden;margin:10px 0 4px}
-  .bar i{display:block;height:100%;background:linear-gradient(90deg,#b45309,#0f766e);
+  .bar{height:9px;border-radius:6px;background:#ececec;overflow:hidden;margin:10px 0 4px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#111111,#8a8a8a);
     width:0;transition:width .35s}
 
   /* 时间线 */
@@ -93,11 +99,26 @@
   .tl h4{margin:2px 0 4px;font-size:16px}
   .tl p{margin:0;color:var(--muted);font-size:14px}
 
-  .app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  @media(max-width:800px){.app-grid{grid-template-columns:1fr}}
+  /* 应用：不对称网格 */
+  .app-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:16px}
   .app{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}
   .app h4{margin:0 0 6px;font-size:16px;color:var(--accent)}
   .app p{margin:0;color:var(--muted);font-size:14px}
+  .app:nth-child(1){grid-row:span 2;display:flex;flex-direction:column;justify-content:flex-end;
+    min-height:200px;background:#fbfbfb;
+    border-color:#dcdcdc;position:relative;overflow:hidden}
+  .app:nth-child(1):after{content:"π";position:absolute;right:14px;top:-38px;font-size:160px;
+    line-height:1;color:rgba(0,0,0,.055);font-family:var(--display);font-weight:700;pointer-events:none}
+  .app:nth-child(1) h4{font-size:21px}
+  .app:nth-child(1) p{font-size:15px}
+  .app:nth-child(1) .app-tag{display:inline-block;align-self:flex-start;font-size:11px;
+    letter-spacing:1.5px;color:var(--muted);border:1px solid var(--line);border-radius:20px;
+    padding:2px 10px;margin-bottom:auto;font-family:"Segoe UI",sans-serif}
+  .app:nth-child(4){background:#fafafa;border-color:#e0e0e0}
+  .app:nth-child(6){grid-column:1/-1;background:#fbfbfb}
+  @media(max-width:800px){.app-grid{grid-template-columns:1fr}
+    .app:nth-child(1){grid-row:auto;min-height:0}
+    .app:nth-child(6){grid-column:auto}}
 
   footer{border-top:1px solid var(--line);padding:28px 22px;text-align:center;
     color:var(--muted);font-size:13px;font-family:"Segoe UI","PingFang SC",sans-serif}
@@ -122,9 +143,14 @@
 </div>
 
 <header class="hero">
-  <p class="pi-big">π</p>
-  <h1>一个常数，两千年</h1>
-  <p>圆周率是圆的周长与直径之比。它不因圆的大小而改变，却让无数人为之计算一生。</p>
+  <div class="hero-grid">
+    <p class="pi-big">π</p>
+    <div class="hero-text">
+      <div class="hero-mark"></div>
+      <h1>一个常数，两千年</h1>
+      <p class="sub">圆周率是圆的周长与直径之比。它不因圆的大小而改变，却让无数人为之计算一生。</p>
+    </div>
+  </div>
   <div class="digits-box" id="digitsBox"></div>
 </header>
 
@@ -179,7 +205,7 @@
       <div class="lab">
         <div>
           <canvas id="polyCanvas" aria-label="正多边形逼近圆的可视化"></canvas>
-          <p class="note" id="polyNote">内接正 n 边形（蓝）与外切正 n 边形（橙）把圆夹在中间。</p>
+          <p class="note" id="polyNote">内接正 n 边形（深色）与外切正 n 边形（浅色）把圆夹在中间。</p>
         </div>
         <div>
           <div class="ctrl-label"><span>边数 n</span><span id="nVal" class="sans">6</span></div>
@@ -206,7 +232,7 @@
     <div class="card">
       <div class="lab">
         <div><canvas id="buffonCanvas" aria-label="蒲丰投针模拟"></canvas>
-          <p class="note">线间距 d = 1，针长 L = 0.8d。红针为与线相交者。</p>
+          <p class="note">线间距 d = 1，针长 L = 0.8d。深色针为与线相交者。</p>
         </div>
         <div>
           <div class="stats">
@@ -247,7 +273,7 @@
     <div class="sec-head"><span class="sec-num">06</span><h2>π 出现在哪里</h2></div>
     <p class="lead">π 远不止用于量圆。它藏身于概率、波动、信号与宇宙的方程里。</p>
     <div class="app-grid">
-      <div class="app"><h4>工程与制造</h4><p>齿轮、管道、轮胎、卫星轨道的尺寸计算都离不开 π。</p></div>
+      <div class="app"><span class="app-tag">MOST VISIBLE</span><h4>工程与制造</h4><p>齿轮、管道、轮胎、卫星轨道的尺寸计算都离不开 π。从一枚螺栓的牙距，到一条环形轨道的周长，π 决定了零件能否严丝合缝。</p></div>
       <div class="app"><h4>信号与通信</h4><p>傅里叶变换中的角频率 2πf，是音频、5G 与图像压缩的基础。</p></div>
       <div class="app"><h4>概率统计</h4><p>正态分布的密度函数含 √(2π)，中心极限定理因此处处可见 π。</p></div>
       <div class="app"><h4>物理波动</h4><p>单摆周期 T = 2π√(L/g)，电磁波与量子波函数同样含 π。</p></div>
@@ -301,7 +327,7 @@ function drawPolygon(n){
 
   // 圆
   ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-  ctx.strokeStyle='#c9c2b6'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.strokeStyle='#cfcfcf'; ctx.lineWidth=1.5; ctx.stroke();
 
   // 外切多边形
   const rout=R/Math.cos(Math.PI/n);
@@ -312,7 +338,7 @@ function drawPolygon(n){
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.closePath();
-  ctx.strokeStyle='rgba(180,83,9,.45)'; ctx.lineWidth=1.4; ctx.stroke();
+  ctx.strokeStyle='rgba(0,0,0,.32)'; ctx.lineWidth=1.4; ctx.stroke();
 
   // 内接多边形
   ctx.beginPath();
@@ -322,13 +348,13 @@ function drawPolygon(n){
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.closePath();
-  ctx.fillStyle='rgba(15,118,110,.10)'; ctx.fill();
-  ctx.strokeStyle='#0f766e'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,.07)'; ctx.fill();
+  ctx.strokeStyle='#111111'; ctx.lineWidth=2; ctx.stroke();
 
   // 圆心与半径
-  ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fillStyle='#b45309'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fillStyle='#111111'; ctx.fill();
   ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R,cy);
-  ctx.strokeStyle='rgba(180,83,9,.5)'; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(0,0,0,.45)'; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
 
   // 数值
   const lower=n*Math.sin(Math.PI/n);
@@ -376,7 +402,7 @@ function drawBuffon(){
   const scale=gapPx/D;      // 每单位长度像素
 
   // 平行线
-  ctx.strokeStyle='#c9c2b6'; ctx.lineWidth=1.2;
+  ctx.strokeStyle='#cfcfcf'; ctx.lineWidth=1.2;
   for(let i=0;i<rows;i++){
     const y=margin+i*gapPx;
     ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
@@ -386,7 +412,7 @@ function drawBuffon(){
     const x0=nd.x*scale, y0=margin+nd.y*scale;
     const x1=x0+Math.cos(nd.a)*L*scale, y1=y0+Math.sin(nd.a)*L*scale;
     ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1);
-    ctx.strokeStyle=nd.hit?'#dc2626':'rgba(15,118,110,.55)';
+    ctx.strokeStyle=nd.hit?'#111111':'rgba(0,0,0,.26)';
     ctx.lineWidth=nd.hit?1.8:1.2; ctx.stroke();
   });
   document.getElementById('bN').textContent=state.N;
