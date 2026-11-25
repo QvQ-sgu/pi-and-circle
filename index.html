@@ -1,300 +1,309 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head>
+<html lang="zh-CN">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>π 与圆 · 一个常数的两千年</title>
 <meta name="description" content="圆周率 π 的几何意义、割圆术、蒲丰投针与历史。可交互的数学科普单页。">
 <style>
   :root{
-    --bg:#ffffff; --paper:#ffffff; --ink:#111111; --muted:#6f6f6f;
-    --line:#e4e4e4; --accent:#111111; --accent2:#2b2b2b; --soft:#f5f5f5;
-    --shadow:0 8px 30px rgba(0,0,0,.06);
-    --display:"STZhongsong","华文中宋","Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
+    --ink:#111111; --body:#1c1c1c; --muted:#6b6b6b; --faint:#9a9a9a;
+    --paper:#ffffff;
+    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STZhongsong",Georgia,serif;
+    --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-    line-height:1.85;-webkit-font-smoothing:antialiased}
-  h1,h2,h3,h4,.pi-big,.brand{font-family:var(--display);font-weight:700;letter-spacing:.02em}
-  .serif{font-family:var(--display)}
-  .sans{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  body{margin:0;background:var(--paper);color:var(--body);
+    font-family:var(--serif);font-size:17px;line-height:1.85;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  h1,h2,h3,h4{font-family:var(--serif);font-weight:700;color:var(--ink)}
+  p{margin:0}
+  a{color:inherit}
 
-  /* 顶部 */
-  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
-    background:rgba(255,255,255,.86);border-bottom:1px solid var(--line)}
-  .topbar .inner{max-width:1080px;margin:0 auto;padding:12px 22px;display:flex;
-    align-items:center;justify-content:space-between;gap:16px}
-  .brand{font-weight:700;font-size:17px;letter-spacing:.5px}
-  .brand span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;font-size:14px;margin-left:18px;
-    font-family:"Segoe UI","PingFang SC",sans-serif;transition:.2s}
-  nav a:hover{color:var(--accent)}
-  @media(max-width:720px){nav{display:none}}
+  /* 报头 */
+  .masthead{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.93);
+    backdrop-filter:blur(8px)}
+  .masthead .wrap{max-width:1120px;margin:0 auto;padding:15px 44px;
+    display:flex;align-items:baseline;justify-content:space-between;gap:20px}
+  .brand{font-size:15px;letter-spacing:.04em}
+  .brand em{font-style:normal;color:var(--faint);margin-left:8px;font-size:12px;
+    font-family:var(--mono);letter-spacing:.08em}
+  nav{display:flex;gap:22px;flex-wrap:wrap}
+  nav a{font-family:var(--sans);font-size:12px;color:var(--muted);text-decoration:none;
+    letter-spacing:.08em;transition:color .2s}
+  nav a:hover{color:var(--ink)}
+  @media(max-width:780px){nav{display:none}.masthead .wrap{padding:13px 22px}}
 
-  /* 首屏：光学居中的文字区 */
-  header.hero{min-height:540px;display:flex;align-items:center;justify-content:center;
-    padding:36px 22px 60px;text-align:left}
-  .hero-inner{width:100%;max-width:600px}
-  .pi-big{font-size:52px;line-height:1;color:var(--accent);
-    font-family:var(--display);margin:0 0 8px;font-weight:700}
-  .hero h1{font-size:clamp(23px,2.8vw,29px);margin:0 0 9px;font-weight:700;
-    letter-spacing:.08em;line-height:1.3}
-  .hero .sub{color:var(--muted);margin:0;font-size:15.5px;line-height:1.9;
-    text-align:justify;text-justify:inter-ideograph}
-  .digits-box{margin:13px 0 0;font-family:Consolas,monospace;
-    font-size:13px;letter-spacing:1px;color:var(--muted);
-    background:none;border:0;padding:0;word-break:break-all;box-shadow:none}
-  .digits-box b{color:var(--muted);font-weight:400}
-  @media(max-width:700px){
-    header.hero{min-height:0;padding:20px 20px 48px}
-    .pi-big{font-size:42px;margin-bottom:6px}
+  /* 首页 */
+  .hero{position:relative;overflow:hidden;padding:0 0 64px}
+  .hero .wrap{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:0 44px}
+  .hero-inner{padding-top:clamp(56px,16vh,150px)}
+  .eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.26em;
+    color:var(--muted);text-transform:uppercase}
+  h1{font-size:clamp(46px,7vw,92px);line-height:.98;margin:22px 0 0;letter-spacing:-.01em}
+  h1 span{display:block}
+  .standfirst{max-width:430px;margin-top:30px;font-size:17px;line-height:1.95;color:#3f3f3f}
+  .digits{margin-top:40px;max-width:560px;font-family:var(--mono);font-size:12.5px;
+    line-height:2.1;letter-spacing:.05em;color:#8a8a8a;word-break:break-all}
+  .pi-mark{position:absolute;right:-1.5vw;top:-3.2vw;z-index:1;pointer-events:none;
+    font-family:var(--serif);font-weight:700;font-size:47vw;line-height:.72;
+    color:#f1f0ee;user-select:none}
+  @supports((-webkit-text-stroke:1px #000)){
+    .pi-mark{color:transparent;-webkit-text-stroke:1.4px #111;opacity:.92}
+  }
+  @media(max-width:900px){.pi-mark{display:none}.hero{overflow:visible}}
+
+  /* 章节骨架 */
+  main{max-width:1120px;margin:0 auto;padding:0 44px 40px}
+  .chapter{padding-top:84px}
+  .chapter-head{display:grid;grid-template-columns:96px minmax(0,1fr);gap:30px;
+    align-items:baseline}
+  .num{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--faint)}
+  h2{font-size:clamp(27px,3.1vw,36px);margin:0;line-height:1.3}
+  .chapter-body{display:grid;grid-template-columns:96px minmax(0,1fr);gap:30px;
+    margin-top:22px}
+  .chapter-body > *{grid-column:2;max-width:640px}
+  .lead{font-size:17.5px;color:#3a3a3a}
+  .note{font-family:var(--sans);font-size:13px;line-height:1.9;color:var(--muted);
+    margin-top:14px;max-width:600px}
+
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 46px;max-width:760px}
+  .cols2 h3{font-size:18px;margin:0 0 8px}
+  .cols2 p{font-size:16px;color:#4a4a4a;line-height:1.9}
+  @media(max-width:820px){
+    .chapter-head,.chapter-body{grid-template-columns:1fr;gap:10px}
+    .chapter-body > *{grid-column:1}
+    .cols2{grid-template-columns:1fr;gap:26px}
   }
 
-  main{max-width:1080px;margin:0 auto;padding:0 22px 80px}
-  section{margin-top:64px}
-  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px}
-  .sec-num{font-family:Consolas,monospace;color:var(--accent);font-size:14px;letter-spacing:2px}
-  h2{font-size:24px;margin:0;font-weight:700}
-  .lead{color:var(--muted);margin:0 0 22px;font-size:16px}
+  /* 公式表 */
+  .formula-list{max-width:520px;margin-top:6px}
+  .frow{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;
+    padding:12px 0}
+  .frow .name{font-size:16px;color:#565656}
+  .frow .exp{font-size:19px;color:var(--ink);white-space:nowrap}
 
-  .card{background:none;border:0;border-radius:0;box-shadow:none;padding:0}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px 52px}
-  @media(max-width:800px){.grid2{grid-template-columns:1fr}}
+  /* 图与交互 */
+  figure{margin:0}
+  canvas{width:100%;height:380px;display:block}
+  figcaption{font-family:var(--sans);font-size:12.5px;color:#7d7d7d;
+    margin-top:10px;letter-spacing:.02em}
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:16px 30px;margin-top:20px}
+  .ctl{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);
+    font-size:12px;color:var(--muted);letter-spacing:.08em}
+  .ctl output{font-family:var(--mono);font-size:13px;color:var(--ink);min-width:2.4ch}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:190px;height:2px;
+    background:#d8d6d2;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
+    border-radius:50%;background:#111;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border:0;border-radius:50%;
+    background:#111;cursor:pointer}
+  .stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:22px}
+  .stat .k{font-family:var(--sans);font-size:10.5px;letter-spacing:.16em;
+    color:var(--faint);text-transform:uppercase}
+  .stat .v{font-family:var(--mono);font-size:16px;color:var(--ink);margin-top:3px}
+  .txtbtn{background:none;border:0;padding:0;cursor:pointer;font-family:var(--sans);
+    font-size:12.5px;letter-spacing:.1em;color:var(--ink);text-transform:uppercase}
+  .txtbtn:hover{opacity:.55}
 
-  /* 公式 */
-  .formula-row{display:flex;align-items:center;justify-content:space-between;
-    padding:10px 0;gap:12px}
-  #formula .card{max-width:720px}
-  .formula-row .name{color:var(--muted);font-size:15px}
-  .formula-row .exp{font-family:"Cambria Math",Georgia,serif;font-size:21px;color:var(--accent2)}
+  /* 应用 */
+  .apps{display:grid;grid-template-columns:1.55fr 1fr;gap:38px 58px;max-width:900px}
+  .apps h4{font-size:19px;margin:0 0 5px}
+  .apps p{font-size:15px;line-height:1.85;color:#5a5a5a}
+  .apps .item:first-child{grid-row:span 2}
+  .apps .item:last-child{grid-column:1/-1}
+  @media(max-width:820px){
+    .apps{grid-template-columns:1fr;gap:26px}
+    .apps .item:first-child{grid-row:auto}
+    .apps .item:last-child{grid-column:auto}
+  }
 
-  /* 交互区 */
-  .lab{display:grid;grid-template-columns:1fr 320px;gap:22px}
-  @media(max-width:860px){.lab{grid-template-columns:1fr}}
-  canvas{width:100%;height:360px;display:block;border:0;border-radius:0;background:transparent}
-  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .stat{background:none;border:0;border-radius:0;padding:2px 0}
-  .stat .k{font-size:12px;color:var(--muted);font-family:"Segoe UI",sans-serif}
-  .stat .v{font-family:Consolas,monospace;font-size:19px;font-weight:700;color:var(--accent2);margin-top:2px}
-  input[type=range]{width:100%;accent-color:var(--accent);margin:6px 0 14px}
-  .ctrl-label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);
-    font-family:"Segoe UI",sans-serif}
-  button{font-family:"Segoe UI","PingFang SC",sans-serif;border:none;border-radius:9px;
-    padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;transition:.18s}
-  .btn-main{background:var(--accent);color:#fff}
-  .btn-main:hover{filter:brightness(1.08)}
-  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
-  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-  .bar{height:9px;border-radius:6px;background:#ececec;overflow:hidden;margin:10px 0 4px}
-  .bar i{display:block;height:100%;background:linear-gradient(90deg,#111111,#8a8a8a);
-    width:0;transition:width .35s}
+  /* 年表 */
+  .hist{max-width:740px;margin-top:4px}
+  .hrow{display:grid;grid-template-columns:130px minmax(0,1fr);gap:22px;padding:15px 0}
+  .hrow time{font-family:var(--mono);font-size:12px;letter-spacing:.03em;
+    color:var(--faint);padding-top:4px}
+  .hrow h4{font-size:17px;margin:0 0 3px}
+  .hrow p{font-size:15px;color:#5c5c5c;line-height:1.85}
+  @media(max-width:620px){
+    .hrow{grid-template-columns:1fr;gap:2px}
+    .hrow time{padding-top:0}
+  }
 
-  /* 时间线 */
-  .timeline{margin-top:6px}
-  .tl{padding:0 0 20px}
-  .tl time{font-family:Consolas,monospace;color:var(--accent);font-size:13px;letter-spacing:1px}
-  .tl h4{margin:2px 0 4px;font-size:16px}
-  .tl p{margin:0;color:var(--muted);font-size:14px}
-
-  /* 应用：不对称网格 */
-  .app-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:34px 52px}
-  .app{background:none;border:0;border-radius:0;padding:0}
-  .app h4{margin:0 0 6px;font-size:16px;color:var(--accent)}
-  .app p{margin:0;color:var(--muted);font-size:14px}
-  .app:nth-child(1){grid-row:span 2;display:flex;flex-direction:column;justify-content:flex-start}
-  .app:nth-child(1) h4{font-size:23px;margin-bottom:10px}
-  .app:nth-child(1) p{font-size:15px}
-  .app:nth-child(1) .app-tag{display:inline-block;align-self:flex-start;font-size:10px;
-    letter-spacing:2px;color:var(--muted);margin-bottom:6px;font-family:"Segoe UI",sans-serif}
-  .app:nth-child(6){grid-column:1/-1}
-  @media(max-width:800px){.app-grid{grid-template-columns:1fr}
-    .app:nth-child(1){grid-row:auto;min-height:0}
-    .app:nth-child(6){grid-column:auto}}
-
-  footer{border-top:1px solid var(--line);padding:28px 22px;text-align:center;
-    color:var(--muted);font-size:13px;font-family:"Segoe UI","PingFang SC",sans-serif}
-  footer a{color:var(--accent);text-decoration:none}
-  .note{font-size:13px;color:var(--muted);margin-top:12px;font-family:"Segoe UI","PingFang SC",sans-serif}
+  footer{max-width:1120px;margin:0 auto;padding:70px 44px 54px;
+    font-family:var(--sans);font-size:12.5px;color:var(--muted);letter-spacing:.03em}
+  footer a{text-decoration:none;color:var(--ink)}
+  footer .end{font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:10px}
+  @media(max-width:780px){main,footer,.hero .wrap{padding-left:22px;padding-right:22px}}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="inner">
-    <div class="brand">π <span>与圆</span></div>
+<div class="masthead">
+  <div class="wrap">
+    <div class="brand">π 与圆<em>2019—</em></div>
     <nav>
       <a href="#define">定义</a>
       <a href="#formula">公式</a>
       <a href="#archimedes">割圆术</a>
       <a href="#buffon">蒲丰投针</a>
-      <a href="#history">历史</a>
-      <a href="toolbox.html">数值工具箱</a>
+      <a href="#history">年表</a>
+      <a href="toolbox.html">工具箱</a>
     </nav>
   </div>
 </div>
 
 <header class="hero">
-  <div class="hero-inner">
-    <p class="pi-big">π</p>
-    <h1>一个常数，两千年</h1>
-    <p class="sub">圆周率是圆的周长与直径之比。它不因圆的大小而改变，却让无数人为之计算一生。从尼罗河畔的纸草，到超级计算机的万亿位小数，这条追索从未停止。</p>
-    <div class="digits-box" id="digitsBox"></div>
+  <div class="pi-mark" aria-hidden="true">π</div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <p class="eyebrow">A constant · 圆周率</p>
+      <h1><span>一个常数，</span><span>两千年</span></h1>
+      <p class="standfirst">圆周率是圆的周长与直径之比。它不因圆的大小而改变，却让无数人为之计算一生。</p>
+      <p class="digits" id="digitsBox"></p>
+    </div>
   </div>
 </header>
 
 <main>
 
-  <!-- 01 定义 -->
-  <section id="define">
-    <div class="sec-head"><span class="sec-num">01</span><h2>圆与 π 的定义</h2></div>
-    <p class="lead" style="border-color:#FFFFFF">把一枚硬币滚一圈，量出走过的长度，再除以它的直径——无论硬币多大，答案都接近同一个数。</p>
-    <div class="grid2">
-      <div class="card">
-        <h4 class="sans" style="margin:0 0 10px;color:var(--accent)">几何定义</h4>
-        <p style="margin:0;color:var(--muted);font-size:15px">
-          平面上到定点（圆心）距离等于定长（半径 r）的所有点构成圆。圆周长 C 与直径 d 的比值恒为常数，记作 π：
-        </p>
-        <div class="formula-row"><span class="name">圆周率</span><span class="exp">π = C / d = C / 2r</span></div>
-        <div class="formula-row"><span class="name">近似值</span><span class="exp">3.1415926535…</span></div>
-      </div>
-      <div class="card">
-        <h4 class="sans" style="margin:0 0 10px;color:var(--accent)">它是什么数</h4>
-        <p style="margin:0;color:var(--muted);font-size:15px">
-          π 是<b>无理数</b>：不能写成两个整数之比，小数不循环、不终止。1882 年林德曼证明它还是<b>超越数</b>——
-          不是任何整系数多项式方程的根。这直接宣告了「化圆为方」不可能用尺规完成。
-        </p>
-        <div class="formula-row"><span class="name">小数点后已知位数</span><span class="exp">100 万亿位以上</span></div>
-        <div class="formula-row"><span class="name">常用近似</span><span class="exp">22/7 ≈ 3.1429，355/113 ≈ 3.1415929</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 02 公式 -->
-  <section id="formula">
-    <div class="sec-head"><span class="sec-num">02</span><h2>圆的基本公式</h2></div>
-    <p class="lead">以下公式全部由 π 串联。设圆的半径为 r，圆心角为 θ（弧度制）。</p>
-    <div class="card">
-      <div class="formula-row"><span class="name">圆周长</span><span class="exp">C = 2πr</span></div>
-      <div class="formula-row"><span class="name">圆面积</span><span class="exp">S = πr²</span></div>
-      <div class="formula-row"><span class="name">弧长</span><span class="exp">l = rθ</span></div>
-      <div class="formula-row"><span class="name">扇形面积</span><span class="exp">S = ½r²θ = ½rl</span></div>
-      <div class="formula-row"><span class="name">球体积</span><span class="exp">V = 4/3 πr³</span></div>
-      <div class="formula-row"><span class="name">球表面积</span><span class="exp">A = 4πr²</span></div>
-      <div class="formula-row"><span class="name">椭圆面积</span><span class="exp">S = πab</span></div>
-    </div>
-    <p class="note">阿基米德用「穷竭法」证明圆面积等于一个直角边为 r 与 C 的直角三角形面积，即 ½·r·2πr = πr²，这是最早的积分思想之一。</p>
-  </section>
-
-  <!-- 03 割圆术 -->
-  <section id="archimedes">
-    <div class="sec-head"><span class="sec-num">03</span><h2>割圆术：用多边形逼近圆</h2></div>
-    <p class="lead">刘徽与阿基米德各自想到同一件事：在圆内接正多边形，边数越多，周长越接近圆周长，π 的估计就越准。</p>
-    <div class="card">
-      <div class="lab">
+  <section id="define" class="chapter">
+    <div class="chapter-head"><span class="num">01</span><h2>圆与 π 的定义</h2></div>
+    <div class="chapter-body">
+      <p class="lead">把一枚硬币滚一圈，量出走过的长度，再除以它的直径——无论硬币多大，答案都接近同一个数。</p>
+      <div class="cols2" style="margin-top:26px">
         <div>
-          <canvas id="polyCanvas" aria-label="正多边形逼近圆的可视化"></canvas>
-          <p class="note" id="polyNote">内接正 n 边形（深色）与外切正 n 边形（浅色）把圆夹在中间。</p>
+          <h3>几何定义</h3>
+          <p>平面上到定点（圆心）距离等于定长（半径 r）的所有点构成圆。圆周长 C 与直径 d 的比值恒为常数，记作 π：π = C / d = C / 2r ≈ 3.1415926535…</p>
         </div>
         <div>
-          <div class="ctrl-label"><span>边数 n</span><span id="nVal" class="sans">6</span></div>
-          <input type="range" id="nSlider" min="3" max="96" step="1" value="6">
-          <div class="stats">
-            <div class="stat"><div class="k">内接下界</div><div class="v" id="lower">3.000000</div></div>
-            <div class="stat"><div class="k">外切上界</div><div class="v" id="upper">3.464102</div></div>
-            <div class="stat"><div class="k">误差区间宽度</div><div class="v" id="gap">0.464102</div></div>
-            <div class="stat"><div class="k">真实 π</div><div class="v">3.141593</div></div>
-          </div>
-          <div class="bar"><i id="barFill"></i></div>
-          <p class="note">下界 n·sin(π/n)，上界 n·tan(π/n)。当 n 增大，两界向 π 收拢。</p>
-          <button class="btn-main" id="animateBtn" style="width:100%;margin-top:4px">自动增加边数</button>
-        </div>
-      </div>
-    </div>
-    <p class="note">刘徽用 3072 边形得到 3.1416；祖冲之把 π 精确到 3.1415926 &lt; π &lt; 3.1415927，这一纪录保持了近千年。</p>
-  </section>
-
-  <!-- 04 蒲丰投针 -->
-  <section id="buffon">
-    <div class="sec-head"><span class="sec-num">04</span><h2>蒲丰投针：用概率求 π</h2></div>
-    <p class="lead">1777 年，蒲丰提出：向画有等距平行线的平面随机投针，针与线相交的概率竟与 π 有关。于是抛针也能估 π。</p>
-    <div class="card">
-      <div class="lab">
-        <div><canvas id="buffonCanvas" aria-label="蒲丰投针模拟"></canvas>
-          <p class="note">线间距 d = 1，针长 L = 0.8d。深色针为与线相交者。</p>
-        </div>
-        <div>
-          <div class="stats">
-            <div class="stat"><div class="k">投针总数 N</div><div class="v" id="bN">0</div></div>
-            <div class="stat"><div class="k">相交数 H</div><div class="v" id="bH">0</div></div>
-            <div class="stat"><div class="k">π 估计值</div><div class="v" id="bPi">—</div></div>
-            <div class="stat"><div class="k">理论概率</div><div class="v">2L/πd</div></div>
-          </div>
-          <div class="formula-row" style="margin-top:8px"><span class="name">估计公式</span><span class="exp">π ≈ 2LN / (dH)</span></div>
-          <button class="btn-main" id="dropBtn" style="width:100%;margin-top:10px">投 1000 根针</button>
-          <button class="btn-ghost" id="resetBtn" style="width:100%;margin-top:8px">清零重来</button>
-          <p class="note">理论概率 P = 2L/(πd)。L=0.8d 时 P≈0.509，故 π ≈ 2·0.8/0.509 ≈ 3.14。</p>
+          <h3>它是什么数</h3>
+          <p>π 是无理数：不能写成两个整数之比，小数不循环、不终止。1882 年林德曼证明它还是超越数——不是任何整系数多项式方程的根。这直接宣告「化圆为方」不可能用尺规完成。</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 05 历史 -->
-  <section id="history">
-    <div class="sec-head"><span class="sec-num">05</span><h2>计算 π 的简史</h2></div>
-    <p class="lead">从几何到无穷级数，再到计算机，人类对 π 的追逐从未停止。</p>
-    <div class="card">
-      <div class="timeline">
-        <div class="tl"><time>约公元前 1650 年</time><h4>莱因德纸草书</h4><p>古埃及人用 (16/9)² ≈ 3.1605 作为圆面积计算的常数。</p></div>
-        <div class="tl"><time>约公元前 250 年</time><h4>阿基米德</h4><p>用 96 边形夹逼，得 3.1408 &lt; π &lt; 3.1429。</p></div>
-        <div class="tl"><time>约公元 263 年</time><h4>刘徽 · 割圆术</h4><p>提出「割之弥细，所失弥少」，以 3072 边形得 3.1416。</p></div>
-        <div class="tl"><time>约公元 480 年</time><h4>祖冲之</h4><p>给出 3.1415926 &lt; π &lt; 3.1415927，并提出密率 355/113。</p></div>
-        <div class="tl"><time>1671 年</time><h4>格雷果里－莱布尼茨级数</h4><p>π/4 = 1 − 1/3 + 1/5 − 1/7 + …，π 首次与无穷级数相连。</p></div>
-        <div class="tl"><time>1706 年</time><h4>梅钦公式</h4><p>π/4 = 4·arctan(1/5) − arctan(1/239)，把 π 算到 100 位。</p></div>
-        <div class="tl"><time>1882 年</time><h4>林德曼</h4><p>证明 π 是超越数，化圆为方被判定为尺规不可能。</p></div>
-        <div class="tl"><time>2019 年至今</time><h4>超级计算机</h4><p>Google 与瑞士团队先后把 π 算到 31.4 万亿、62.8 万亿、100 万亿位。</p></div>
+  <section id="formula" class="chapter">
+    <div class="chapter-head"><span class="num">02</span><h2>圆的基本公式</h2></div>
+    <div class="chapter-body">
+      <p class="lead">以下公式全部由 π 串联。设圆的半径为 r，圆心角为 θ（弧度制）。</p>
+      <div class="formula-list">
+        <div class="frow"><span class="name">圆周长</span><span class="exp">C = 2πr</span></div>
+        <div class="frow"><span class="name">圆面积</span><span class="exp">S = πr²</span></div>
+        <div class="frow"><span class="name">弧长</span><span class="exp">l = rθ</span></div>
+        <div class="frow"><span class="name">扇形面积</span><span class="exp">S = ½r²θ = ½rl</span></div>
+        <div class="frow"><span class="name">球体积</span><span class="exp">V = 4/3 πr³</span></div>
+        <div class="frow"><span class="name">球表面积</span><span class="exp">A = 4πr²</span></div>
+        <div class="frow"><span class="name">椭圆面积</span><span class="exp">S = πab</span></div>
+      </div>
+      <p class="note">阿基米德用穷竭法证明圆面积等于直角边为 r 与 C 的直角三角形面积，即 ½·r·2πr = πr²，这是最早的积分思想之一。</p>
+    </div>
+  </section>
+
+  <section id="archimedes" class="chapter">
+    <div class="chapter-head"><span class="num">03</span><h2>割圆术</h2></div>
+    <div class="chapter-body">
+      <p class="lead">刘徽与阿基米德各自想到同一件事：在圆内接正多边形，边数越多，周长越接近圆周长，π 的估计就越准。</p>
+      <figure style="margin-top:26px">
+        <canvas id="polyCanvas" aria-label="正多边形逼近圆的可视化"></canvas>
+        <figcaption>图 1　内接（实线）与外切（细线）正 n 边形把圆夹在中间</figcaption>
+      </figure>
+      <div class="controls">
+        <label class="ctl" for="nSlider">边数 n <output id="nVal">6</output></label>
+        <input type="range" id="nSlider" min="3" max="96" step="1" value="6">
+        <button class="txtbtn" id="animateBtn">自动增加 →</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="k">内接下界</div><div class="v" id="lower">3.000000</div></div>
+        <div class="stat"><div class="k">外切上界</div><div class="v" id="upper">3.464102</div></div>
+        <div class="stat"><div class="k">区间宽度</div><div class="v" id="gap">0.464102</div></div>
+        <div class="stat"><div class="k">真实 π</div><div class="v">3.141593</div></div>
+      </div>
+      <p class="note">下界 n·sin(π/n)，上界 n·tan(π/n)。当 n 增大，两界向 π 收拢。刘徽用 3072 边形得到 3.1416；祖冲之精确到 3.1415926 &lt; π &lt; 3.1415927。</p>
+    </div>
+  </section>
+
+  <section id="buffon" class="chapter">
+    <div class="chapter-head"><span class="num">04</span><h2>蒲丰投针</h2></div>
+    <div class="chapter-body">
+      <p class="lead">1777 年，蒲丰提出：向画有等距平行线的平面随机投针，针与线相交的概率竟与 π 有关。于是抛针也能估 π。</p>
+      <figure style="margin-top:26px">
+        <canvas id="buffonCanvas" aria-label="蒲丰投针模拟"></canvas>
+        <figcaption>图 2　线间距 d = 1，针长 L = 0.8d；深色为与线相交者</figcaption>
+      </figure>
+      <div class="controls">
+        <button class="txtbtn" id="dropBtn">投 1000 根针 →</button>
+        <button class="txtbtn" id="resetBtn">清零</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="k">投针总数 N</div><div class="v" id="bN">0</div></div>
+        <div class="stat"><div class="k">相交数 H</div><div class="v" id="bH">0</div></div>
+        <div class="stat"><div class="k">π 估计值</div><div class="v" id="bPi">—</div></div>
+        <div class="stat"><div class="k">理论概率</div><div class="v">2L/πd</div></div>
+      </div>
+      <p class="note">估计公式 π ≈ 2LN / (dH)。当 L = 0.8d 时理论概率约 0.509，故 π ≈ 2·0.8 / 0.509 ≈ 3.14。</p>
+    </div>
+  </section>
+
+  <section id="history" class="chapter">
+    <div class="chapter-head"><span class="num">05</span><h2>计算 π 的简史</h2></div>
+    <div class="chapter-body">
+      <div class="hist">
+        <div class="hrow"><time>约前 1650</time><div><h4>莱因德纸草书</h4><p>古埃及人用 (16/9)² ≈ 3.1605 作为圆面积计算的常数。</p></div></div>
+        <div class="hrow"><time>约前 250</time><div><h4>阿基米德</h4><p>用 96 边形夹逼，得 3.1408 &lt; π &lt; 3.1429。</p></div></div>
+        <div class="hrow"><time>263</time><div><h4>刘徽 · 割圆术</h4><p>提出「割之弥细，所失弥少」，以 3072 边形得 3.1416。</p></div></div>
+        <div class="hrow"><time>480</time><div><h4>祖冲之</h4><p>给出 3.1415926 &lt; π &lt; 3.1415927，并提出密率 355/113。</p></div></div>
+        <div class="hrow"><time>1671</time><div><h4>格雷果里－莱布尼茨级数</h4><p>π/4 = 1 − 1/3 + 1/5 − 1/7 + …，π 首次与无穷级数相连。</p></div></div>
+        <div class="hrow"><time>1706</time><div><h4>梅钦公式</h4><p>π/4 = 4·arctan(1/5) − arctan(1/239)，把 π 算到 100 位。</p></div></div>
+        <div class="hrow"><time>1882</time><div><h4>林德曼</h4><p>证明 π 是超越数，化圆为方被判定为尺规不可能。</p></div></div>
+        <div class="hrow"><time>2019 至今</time><div><h4>超级计算机</h4><p>Google 与瑞士团队先后把 π 算到 31.4 万亿、62.8 万亿、100 万亿位。</p></div></div>
       </div>
     </div>
   </section>
 
-  <!-- 06 应用 -->
-  <section>
-    <div class="sec-head"><span class="sec-num">06</span><h2>π 出现在哪里</h2></div>
-    <p class="lead">π 远不止用于量圆。它藏身于概率、波动、信号与宇宙的方程里。</p>
-    <div class="app-grid">
-      <div class="app"><span class="app-tag">MOST VISIBLE</span><h4>工程与制造</h4><p>齿轮、管道、轮胎、卫星轨道的尺寸计算都离不开 π。从一枚螺栓的牙距，到一条环形轨道的周长，π 决定了零件能否严丝合缝。</p></div>
-      <div class="app"><h4>信号与通信</h4><p>傅里叶变换中的角频率 2πf，是音频、5G 与图像压缩的基础。</p></div>
-      <div class="app"><h4>概率统计</h4><p>正态分布的密度函数含 √(2π)，中心极限定理因此处处可见 π。</p></div>
-      <div class="app"><h4>物理波动</h4><p>单摆周期 T = 2π√(L/g)，电磁波与量子波函数同样含 π。</p></div>
-      <div class="app"><h4>数论与算法</h4><p>π 的小数位被用作随机数检验、哈希测试与算力基准。</p></div>
-      <div class="app"><h4>天文与宇宙</h4><p>开普勒定律、引力波波形、宇宙学参数中都出现 π。</p></div>
+  <section class="chapter">
+    <div class="chapter-head"><span class="num">06</span><h2>π 出现在哪里</h2></div>
+    <div class="chapter-body">
+      <p class="lead">π 远不止用于量圆。它藏身于概率、波动、信号与宇宙的方程里。</p>
+      <div class="apps" style="margin-top:26px">
+        <div class="item"><h4>工程与制造</h4><p>齿轮、管道、轮胎、卫星轨道的尺寸计算都离不开 π。从一枚螺栓的牙距，到一条环形轨道的周长，π 决定了零件能否严丝合缝。</p></div>
+        <div class="item"><h4>信号与通信</h4><p>傅里叶变换中的角频率 2πf，是音频、5G 与图像压缩的基础。</p></div>
+        <div class="item"><h4>概率统计</h4><p>正态分布的密度函数含 √(2π)，中心极限定理因此处处可见 π。</p></div>
+        <div class="item"><h4>物理波动</h4><p>单摆周期 T = 2π√(L/g)，电磁波与量子波函数同样含 π。</p></div>
+        <div class="item"><h4>数论与算法</h4><p>π 的小数位被用作随机数检验、哈希测试与算力基准。</p></div>
+        <div class="item"><h4>天文与宇宙</h4><p>开普勒定律、引力波波形、宇宙学参数中都出现 π。</p></div>
+      </div>
     </div>
   </section>
 
 </main>
 
-
+<footer>
+  <div class="end">π 与圆 · 一个常数的两千年</div>
+  静态页面，全部计算在浏览器内完成 · <a href="toolbox.html">数值计算工具箱 →</a>
+</footer>
 
 <script>
-/* ---------- 数字滚动展示 ---------- */
+/* 数字滚动展示 */
 (function(){
   const s="3.14159265358979323846264338327950288419716939937510"+
           "58209749445923078164062862089986280348253421170679";
   const box=document.getElementById('digitsBox');
   let i=0;
-  function step(){
+  (function step(){
     if(i>s.length) return;
-    box.innerHTML='<b>π = </b>'+s.slice(0,i);
-    i++;
-    setTimeout(step,22);
-  }
-  step();
+    box.textContent='π = '+s.slice(0,i);
+    i++; setTimeout(step,20);
+  })();
 })();
 
-/* ---------- 通用绘图辅助 ---------- */
+/* 画布准备 */
 function setupCanvas(cv){
   const dpr=window.devicePixelRatio||1;
-  const w=cv.clientWidth||600, h=cv.clientHeight||360;
+  const w=cv.clientWidth||600, h=cv.clientHeight||380;
   cv.width=w*dpr; cv.height=h*dpr;
   const ctx=cv.getContext('2d');
   ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -302,7 +311,7 @@ function setupCanvas(cv){
   return {ctx,w,h};
 }
 
-/* ---------- 割圆术 ---------- */
+/* 割圆术 */
 const polyCv=document.getElementById('polyCanvas');
 const nSlider=document.getElementById('nSlider');
 let polyAnim=null;
@@ -311,11 +320,9 @@ function drawPolygon(n){
   const {ctx,w,h}=setupCanvas(polyCv);
   const cx=w/2, cy=h/2, R=Math.min(w,h)*0.34;
 
-  // 圆
   ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-  ctx.strokeStyle='#cfcfcf'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.strokeStyle='#d3d1cd'; ctx.lineWidth=1; ctx.stroke();
 
-  // 外切多边形
   const rout=R/Math.cos(Math.PI/n);
   ctx.beginPath();
   for(let i=0;i<n;i++){
@@ -324,9 +331,8 @@ function drawPolygon(n){
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.closePath();
-  ctx.strokeStyle='rgba(0,0,0,.32)'; ctx.lineWidth=1.4; ctx.stroke();
+  ctx.strokeStyle='rgba(17,17,17,.28)'; ctx.lineWidth=1; ctx.stroke();
 
-  // 内接多边形
   ctx.beginPath();
   for(let i=0;i<n;i++){
     const a=-Math.PI/2+i*2*Math.PI/n;
@@ -334,24 +340,19 @@ function drawPolygon(n){
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.closePath();
-  ctx.fillStyle='rgba(0,0,0,.07)'; ctx.fill();
-  ctx.strokeStyle='#111111'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='rgba(17,17,17,.05)'; ctx.fill();
+  ctx.strokeStyle='#111111'; ctx.lineWidth=1.8; ctx.stroke();
 
-  // 圆心与半径
-  ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fillStyle='#111111'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,2.6,0,Math.PI*2); ctx.fillStyle='#111'; ctx.fill();
   ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R,cy);
-  ctx.strokeStyle='rgba(0,0,0,.45)'; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(17,17,17,.25)'; ctx.setLineDash([4,4]); ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]);
 
-  // 数值
   const lower=n*Math.sin(Math.PI/n);
   const upper=n*Math.tan(Math.PI/n);
   document.getElementById('nVal').textContent=n;
   document.getElementById('lower').textContent=lower.toFixed(6);
   document.getElementById('upper').textContent=upper.toFixed(6);
   document.getElementById('gap').textContent=(upper-lower).toFixed(6);
-  // 进度条：n 越大越接近
-  const pct=Math.min(100,(n/96)*100);
-  document.getElementById('barFill').style.width=pct+'%';
 }
 
 nSlider.addEventListener('input',e=>{
@@ -360,14 +361,14 @@ nSlider.addEventListener('input',e=>{
 });
 
 document.getElementById('animateBtn').addEventListener('click',function(){
-  if(polyAnim){cancelAnimationFrame(polyAnim);polyAnim=null;this.textContent='自动增加边数';return;}
-  this.textContent='暂停';
+  const btn=this;
+  if(polyAnim){cancelAnimationFrame(polyAnim);polyAnim=null;btn.textContent='自动增加 →';return;}
+  btn.textContent='暂停';
   let n=parseInt(nSlider.value,10);
   const tick=()=>{
-    n+=1;
-    if(n>96){n=96;}
+    n=Math.min(n+1,96);
     nSlider.value=n; drawPolygon(n);
-    if(n>=96){polyAnim=null;this.textContent='自动增加边数';return;}
+    if(n>=96){polyAnim=null;btn.textContent='自动增加 →';return;}
     polyAnim=requestAnimationFrame(()=>setTimeout(tick,60));
   };
   tick();
@@ -375,31 +376,28 @@ document.getElementById('animateBtn').addEventListener('click',function(){
 
 drawPolygon(6);
 
-/* ---------- 蒲丰投针 ---------- */
+/* 蒲丰投针 */
 const bCv=document.getElementById('buffonCanvas');
 const state={N:0,H:0,needles:[]};
 const L=0.8, D=1.0;
 
 function drawBuffon(){
   const {ctx,w,h}=setupCanvas(bCv);
-  const rows=4;             // 4 条横线，3 个间隔
-  const margin=30;
+  const rows=4, margin=34;
   const gapPx=(h-margin*2)/(rows-1);
-  const scale=gapPx/D;      // 每单位长度像素
+  const scale=gapPx/D;
 
-  // 平行线
-  ctx.strokeStyle='#cfcfcf'; ctx.lineWidth=1.2;
+  ctx.strokeStyle='#d3d1cd'; ctx.lineWidth=1;
   for(let i=0;i<rows;i++){
     const y=margin+i*gapPx;
     ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
   }
-  // 针
   state.needles.forEach(nd=>{
     const x0=nd.x*scale, y0=margin+nd.y*scale;
     const x1=x0+Math.cos(nd.a)*L*scale, y1=y0+Math.sin(nd.a)*L*scale;
     ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1);
-    ctx.strokeStyle=nd.hit?'#111111':'rgba(0,0,0,.26)';
-    ctx.lineWidth=nd.hit?1.8:1.2; ctx.stroke();
+    ctx.strokeStyle=nd.hit?'#111111':'rgba(17,17,17,.22)';
+    ctx.lineWidth=nd.hit?1.6:1; ctx.stroke();
   });
   document.getElementById('bN').textContent=state.N;
   document.getElementById('bH').textContent=state.H;
@@ -408,39 +406,29 @@ function drawBuffon(){
 
 document.getElementById('dropBtn').addEventListener('click',()=>{
   const w=bCv.clientWidth, h=bCv.clientHeight;
-  const rows=4, margin=30, gapPx=(h-margin*2)/(rows-1), scale=gapPx/D;
-  const maxY=(rows-1)*D;          // 可用纵向单位长度
-  const maxX=w/scale;
+  const rows=4, margin=34, gapPx=(h-margin*2)/(rows-1), scale=gapPx/D;
+  const maxY=(rows-1)*D, maxX=w/scale;
   for(let k=0;k<1000;k++){
-    const x=Math.random()*maxX;
-    const y=Math.random()*maxY;
-    const a=Math.random()*Math.PI*2;
-    // 与最近整数线的距离
-    const cy=y/ D;                  // 以 D 为单位
-    const dy=Math.abs(cy-Math.round(cy))*D;
-    const half=(L/2)*Math.abs(Math.sin(a));
-    const hit=dy<=half;
-    state.needles.push({x,y,a,hit});
-    state.N++; if(hit) state.H++;
+    const x=Math.random()*maxX, y=Math.random()*maxY, a=Math.random()*Math.PI*2;
+    const cy=y/D, dy=Math.abs(cy-Math.round(cy))*D;
+    const hit=dy<=(L/2)*Math.abs(Math.sin(a));
+    state.needles.push({x,y,a,hit}); state.N++; if(hit) state.H++;
   }
-  if(state.needles.length>2600) state.needles=state.needles.slice(-2600);
+  if(state.needles.length>2400) state.needles=state.needles.slice(-2400);
   drawBuffon();
 });
 
 document.getElementById('resetBtn').addEventListener('click',()=>{
-  state.N=0; state.H=0; state.needles=[];
-  drawBuffon();
+  state.N=0;state.H=0;state.needles=[];drawBuffon();
 });
 
 drawBuffon();
 
-/* ---------- 窗口尺寸变化重绘 ---------- */
 let rz=null;
 window.addEventListener('resize',()=>{
   clearTimeout(rz);
   rz=setTimeout(()=>{drawPolygon(parseInt(nSlider.value,10));drawBuffon();},150);
 });
 </script>
-
-
-</body></html>
+</body>
+</html>
