@@ -3,346 +3,594 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>数值计算工具箱 · Numerical Toolbox</title>
+<title>数值工具箱 · NUMERICAL TOOLBOX</title>
+<meta name="description" content="插值、拟合、求根、积分与微分方程。全实时计算，可在图上直接拖动数据点。">
 <style>
   :root{
-    --bg:#f4f6fb; --card:#ffffff; --ink:#1f2937; --muted:#6b7280;
-    --line:#e5e9f2; --brand:#4f46e5; --brand2:#7c3aed; --soft:#eef2ff;
-    --ok:#0f9d58; --warn:#d97706; --err:#dc2626; --shadow:0 8px 30px rgba(30,41,90,.08);
+    --bg:#0a0a0a;
+    --ink:#f0efec; --body:#c6c5c1; --muted:#8a8984; --faint:#575652;
+    --line:rgba(240,239,236,.15); --line2:rgba(240,239,236,.07);
+    --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
-  header{padding:28px 20px 20px;text-align:center;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff}
-  header h1{margin:0;font-size:26px;letter-spacing:.5px}
-  header p{margin:6px 0 0;opacity:.9;font-size:14px}
-  .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
-  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px}
-  .tab{border:1px solid var(--line);background:var(--card);color:var(--muted);padding:10px 16px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:.18s;box-shadow:var(--shadow)}
-  .tab:hover{color:var(--brand);border-color:var(--brand)}
-  .tab.active{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-color:transparent}
-  .panel{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
-  .panel.active{display:block;animation:fade .3s ease}
-  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .panel-head{padding:18px 22px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#fafbff,#fff)}
-  .panel-head h2{margin:0;font-size:18px;color:var(--brand)}
-  .panel-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
-  .grid{display:grid;grid-template-columns:340px 1fr;gap:0}
-  @media(max-width:860px){.grid{grid-template-columns:1fr}}
-  .controls{padding:20px;border-right:1px solid var(--line)}
-  @media(max-width:860px){.controls{border-right:none;border-bottom:1px solid var(--line)}}
-  .output{padding:20px;min-width:0}
-  label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px}
-  label:first-child{margin-top:0}
-  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14px;color:var(--ink);background:#fbfcff;font-family:inherit;transition:.15s}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--soft)}
-  textarea{resize:vertical;min-height:110px;font-family:"Consolas",monospace;font-size:13px}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .hint{font-size:12px;color:var(--muted);margin-top:5px}
-  button.run{margin-top:20px;width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.18s}
-  button.run:hover{filter:brightness(1.08);transform:translateY(-1px)}
-  button.ghost{margin-top:8px;width:100%;padding:9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--muted);font-size:13px;cursor:pointer}
-  button.ghost:hover{border-color:var(--brand);color:var(--brand)}
-  .result-box{background:#f8faff;border:1px dashed #c7d0f5;border-radius:12px;padding:16px;margin-bottom:16px}
-  .result-box h3{margin:0 0 12px;font-size:14px;color:var(--brand)}
-  .kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eef1fb;font-size:14px}
-  .kv:last-child{border-bottom:none}
-  .kv .k{color:var(--muted)}
-  .kv .v{font-family:"Consolas",monospace;font-weight:700;color:var(--ink)}
-  .formula{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;font-family:"Consolas",monospace;font-size:14px;color:var(--brand2);margin-top:10px;word-break:break-all}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
-  th,td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line)}
-  th{background:#fafbff;color:var(--muted);font-weight:700;position:sticky;top:0}
-  td:first-child,th:first-child{text-align:left}
-  .scroll{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:9px}
-  canvas{width:100%;height:330px;background:#fff;border:1px solid var(--line);border-radius:12px;display:block}
-  .chart-title{font-size:13px;font-weight:700;color:var(--muted);margin:18px 0 8px}
-  .msg{padding:10px 12px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none}
-  .msg.err{display:block;background:#fef2f2;color:var(--err);border:1px solid #fecaca}
-  .msg.ok{display:block;background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0}
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
-  .legend i{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
-  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px}
-  code{background:var(--soft);color:var(--brand);padding:1px 5px;border-radius:5px;font-size:12px}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--body);
+    font-family:var(--sans);font-size:16px;line-height:1.85;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  ::selection{background:#f0efec;color:#0a0a0a}
+  h1,h2,h3,h4{color:var(--ink);font-weight:700;margin:0;letter-spacing:-.015em}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+
+  .masthead{position:sticky;top:0;z-index:40;background:rgba(10,10,10,.86);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line2)}
+  .masthead .row{max-width:1240px;margin:0 auto;padding:0 40px;height:54px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);
+    font-size:11px;letter-spacing:.14em;color:var(--faint)}
+  .brand b{font-family:var(--sans);font-size:13.5px;letter-spacing:.06em;
+    font-weight:700;color:var(--ink)}
+  nav{display:flex;gap:24px}
+  nav a{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    color:var(--muted);transition:color .2s;position:relative;padding:3px 0}
+  nav a:hover,nav a.on{color:var(--ink)}
+  nav a.on::before{content:"";position:absolute;left:-9px;top:8px;width:4px;height:4px;
+    background:var(--ink)}
+  @media(max-width:860px){nav{display:none}.masthead .row{padding:0 22px}}
+
+  .hero{max-width:1240px;margin:0 auto;padding:58px 40px 0}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:start}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--faint);
+    text-transform:uppercase}
+  .big-num{font-family:var(--sans);font-size:clamp(112px,14vw,184px);line-height:.82;
+    color:var(--ink);letter-spacing:-.055em;margin:18px 0 0;font-weight:700}
+  h1{font-size:clamp(28px,3.4vw,42px);line-height:1.22;margin:26px 0 0;letter-spacing:.01em}
+  .lead{margin-top:22px;max-width:440px;font-size:15px;line-height:1.95;color:var(--body)}
+
+  .spec{position:relative;border:1px solid var(--line2);padding:6px 18px;margin-top:6px;
+    background:linear-gradient(180deg,rgba(255,255,255,.018),transparent)}
+  .spec .cr{position:absolute;width:6px;height:6px;border:1px solid rgba(240,239,236,.5)}
+  .spec .cr.tl{left:-1px;top:-1px;border-right:0;border-bottom:0}
+  .spec .cr.tr{right:-1px;top:-1px;border-left:0;border-bottom:0}
+  .spec .cr.bl{left:-1px;bottom:-1px;border-right:0;border-top:0}
+  .spec .cr.br{right:-1px;bottom:-1px;border-left:0;border-top:0}
+  .srow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;
+    border-bottom:1px solid var(--line2);font-family:var(--mono);font-size:10px}
+  .srow:last-child{border-bottom:0}
+  .srow .k{color:var(--faint);letter-spacing:.1em;white-space:nowrap}
+  .srow .v{color:var(--ink);text-align:right}
+
+  main{max-width:1240px;margin:0 auto;padding:0 40px}
+  .sec{padding-top:72px;margin-top:72px;border-top:1px solid var(--line2)}
+  .sec-head{display:grid;grid-template-columns:120px minmax(0,1fr);gap:30px;align-items:start}
+  .num{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--faint);padding-top:9px}
+  .num b{display:block;font-weight:400;font-size:10.5px;color:var(--ink);margin-top:3px}
+  h2{font-size:clamp(23px,2.7vw,32px);line-height:1.3}
+  .sec-body{display:grid;grid-template-columns:120px minmax(0,1fr);gap:30px;margin-top:22px}
+  .sec-body>*{grid-column:2;max-width:880px}
+  .sec-body>p{max-width:660px;font-size:15px}
+
+  figure{margin:20px 0 0}
+  canvas{width:100%;display:block;touch-action:none}
+  .cv{height:330px}
+  .cv-mid{height:300px}
+  figcaption{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:8px;
+    letter-spacing:.06em}
+
+  .controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 28px;margin-top:16px}
+  .fld{display:inline-flex;flex-direction:column;gap:3px}
+  .fld .lb{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--faint);
+    text-transform:uppercase;line-height:1.3}
+  .fld input{background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);
+    font-family:var(--mono);font-size:13px;padding:4px 0;width:92px;border-radius:0}
+  .fld input:focus{outline:none;border-bottom-color:var(--ink)}
+  .fld input::-webkit-outer-spin-button,.fld input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .fld.wide input{width:220px}
+  .fld.mid input{width:130px}
+
+  .seg{display:inline-flex;gap:18px;align-items:center}
+  .seg button{background:none;border:0;padding:0 0 3px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.12em;color:var(--faint);cursor:pointer;border-bottom:1px solid transparent;
+    text-transform:uppercase;transition:color .18s}
+  .seg button:hover{color:var(--body)}
+  .seg button.on{color:var(--ink);border-bottom-color:var(--ink)}
+
+  .slide{display:inline-flex;align-items:center;gap:12px}
+  .ctl{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);
+    font-size:9px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+  .ctl output{font-size:11.5px;color:var(--ink);min-width:3.5ch;letter-spacing:0;text-transform:none}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:170px;height:1px;
+    background:rgba(240,239,236,.28);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;
+    border-radius:50%;background:var(--ink);cursor:grab}
+  input[type=range]::-moz-range-thumb{width:9px;height:9px;border:0;border-radius:50%;
+    background:var(--ink);cursor:grab}
+
+  .btn{background:none;border:0;cursor:pointer;font-family:var(--mono);font-size:10px;
+    letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding:0 0 2px;transition:opacity .18s}
+  .btn:hover{opacity:.55}
+  .btn:disabled{opacity:.28;cursor:default}
+
+  .status{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--faint);
+    margin-top:12px;min-height:15px}
+  .status.bad{color:var(--ink)}
+  .status.bad::before{content:"! ";}
+
+  .readout{display:flex;flex-wrap:wrap;gap:22px 52px;margin-top:18px}
+  .readout .k{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--faint);
+    text-transform:uppercase}
+  .readout .v{font-family:var(--mono);font-size:19px;color:var(--ink);margin-top:3px;
+    letter-spacing:-.02em;word-break:break-all}
+  .readout .v.sm{font-size:13px;line-height:1.7;max-width:520px}
+
+  .tbl-wrap{max-height:190px;overflow:auto;margin-top:8px;padding-right:6px}
+  .tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px}
+  .tbl th{font-weight:400;color:var(--faint);text-align:right;padding:6px 0;
+    border-bottom:1px solid var(--line);font-size:9px;letter-spacing:.1em;position:sticky;top:0;
+    background:var(--bg)}
+  .tbl td{text-align:right;padding:5px 0;color:var(--body);border-bottom:1px solid var(--line2)}
+  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  .tbl-wrap::-webkit-scrollbar{width:4px}
+  .tbl-wrap::-webkit-scrollbar-thumb{background:rgba(240,239,236,.2)}
+
+  .note{font-size:13px;line-height:1.95;color:var(--muted);margin-top:18px;max-width:660px}
+
+  footer{max-width:1240px;margin:80px auto 0;padding:26px 40px 50px;
+    border-top:1px solid var(--line2);font-family:var(--mono);font-size:10px;
+    letter-spacing:.1em;color:var(--faint);display:flex;flex-wrap:wrap;gap:10px 26px;
+    justify-content:space-between}
+  footer a{color:var(--ink)}
+  code{font-family:var(--mono);color:var(--ink)}
+
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:30px}.spec{max-width:360px}}
+  @media(max-width:760px){
+    .hero,.masthead .row,main,footer{padding-left:22px;padding-right:22px}
+    .hero{padding-top:40px}
+    .sec{padding-top:52px;margin-top:52px}
+    .sec-head,.sec-body{grid-template-columns:1fr;gap:8px}
+    .sec-body>*{grid-column:1}
+    .cv,.cv-mid{height:250px}
+    .readout{gap:16px 30px}
+    .readout .v{font-size:17px}
+    .fld.wide input{width:170px}
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>数值计算工具箱</h1>
-  <p>插值 · 拟合 · 求根 · 积分 · 微分方程 —— 纯前端离线运行，数据不出浏览器</p>
-</header>
-<div class="wrap">
-  <div class="tabs" id="tabs"></div>
 
-  <!-- 插值 -->
-  <div class="panel active" data-panel="interp">
-    <div class="panel-head"><h2>插值 Interpolation</h2><p>已知离散数据点，构造插值多项式并估算任意点的函数值。</p></div>
-    <div class="grid">
-      <div class="controls">
-        <label>数据点 (每行一组 x y)</label>
-        <textarea id="interp_pts">0 1
-1 3
-2 2
-3 4
-4 3</textarea>
-        <div class="hint">用空格或逗号分隔 x、y；至少 2 个点。</div>
-        <label>插值方法</label>
-        <select id="interp_method"><option value="lagrange">拉格朗日插值</option><option value="newton">牛顿插值（差商）</option></select>
-        <label>待估算的 x</label>
-        <input id="interp_x" type="number" step="any" value="2.5">
-        <button class="run" onclick="runInterp()">开始计算</button>
-        <button class="ghost" onclick="fillSample('interp')">载入示例</button>
-      </div>
-      <div class="output">
-        <div class="msg" id="interp_msg"></div>
-        <div class="result-box"><h3>计算结果</h3><div id="interp_res"></div></div>
-        <div class="chart-title">插值曲线（圆点为已知节点）</div>
-        <canvas id="interp_chart"></canvas>
-        <div class="legend"><span><i style="background:#4f46e5"></i>插值多项式</span><span><i style="background:#dc2626"></i>已知数据点</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 拟合 -->
-  <div class="panel" data-panel="fit">
-    <div class="panel-head"><h2>曲线拟合 Curve Fitting</h2><p>最小二乘法拟合，支持线性与多项式，并给出拟合优度 R²。</p></div>
-    <div class="grid">
-      <div class="controls">
-        <label>数据点 (每行一组 x y)</label>
-        <textarea id="fit_pts">0 0.9
-1 3.1
-2 5.0
-3 6.9
-4 9.2
-5 11.1</textarea>
-        <label>拟合方式</label>
-        <select id="fit_method" onchange="toggleDegree()"><option value="linear">线性拟合 y = ax + b</option><option value="poly">多项式拟合</option></select>
-        <div id="fit_degree_wrap" style="display:none">
-          <label>多项式次数</label>
-          <input id="fit_degree" type="number" value="2" min="1" max="8">
-        </div>
-        <button class="run" onclick="runFit()">开始计算</button>
-        <button class="ghost" onclick="fillSample('fit')">载入示例</button>
-      </div>
-      <div class="output">
-        <div class="msg" id="fit_msg"></div>
-        <div class="result-box"><h3>计算结果</h3><div id="fit_res"></div></div>
-        <div class="chart-title">拟合效果</div>
-        <canvas id="fit_chart"></canvas>
-        <div class="legend"><span><i style="background:#dc2626"></i>原始数据</span><span><i style="background:#4f46e5"></i>拟合曲线</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 求根 -->
-  <div class="panel" data-panel="root">
-    <div class="panel-head"><h2>方程求根 Root Finding</h2><p>求 f(x)=0 的近似根，支持二分法与牛顿迭代法。</p></div>
-    <div class="grid">
-      <div class="controls">
-        <label>函数 f(x)</label>
-        <input id="root_f" type="text" value="x^3 - x - 2">
-        <div class="hint">支持 + - * / ^ 及 sin cos tan exp log sqrt abs PI E 等，如 <code>x^2-2</code>。</div>
-        <label>求根方法</label>
-        <select id="root_method" onchange="toggleRootInputs()"><option value="bisect">二分法</option><option value="newton">牛顿法</option></select>
-        <div id="root_bisect">
-          <div class="row">
-            <div><label>区间 a</label><input id="root_a" type="number" step="any" value="1"></div>
-            <div><label>区间 b</label><input id="root_b" type="number" step="any" value="2"></div>
-          </div>
-        </div>
-        <div id="root_newton" style="display:none">
-          <label>初值 x₀</label>
-          <input id="root_x0" type="number" step="any" value="1.5">
-          <div class="hint">牛顿法导数 f'(x) 留空则自动数值求导。</div>
-          <label>导数 f'(x)（可选）</label>
-          <input id="root_df" type="text" placeholder="例如 3*x^2-1">
-        </div>
-        <div class="row">
-          <div><label>精度 ε</label><input id="root_tol" type="number" step="any" value="0.000001"></div>
-          <div><label>最大迭代</label><input id="root_max" type="number" value="100"></div>
-        </div>
-        <button class="run" onclick="runRoot()">开始计算</button>
-      </div>
-      <div class="output">
-        <div class="msg" id="root_msg"></div>
-        <div class="result-box"><h3>计算结果</h3><div id="root_res"></div></div>
-        <div class="chart-title">函数图像与根</div>
-        <canvas id="root_chart"></canvas>
-        <div class="chart-title">迭代过程</div>
-        <div class="scroll"><table id="root_table"></table></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 积分 -->
-  <div class="panel" data-panel="integ">
-    <div class="panel-head"><h2>数值积分 Numerical Integration</h2><p>用梯形公式与辛普森公式计算定积分的近似值。</p></div>
-    <div class="grid">
-      <div class="controls">
-        <label>函数 f(x)</label>
-        <input id="integ_f" type="text" value="sin(x)">
-        <label>积分下限 a</label>
-        <input id="integ_a" type="number" step="any" value="0">
-        <label>积分上限 b</label>
-        <input id="integ_b" type="number" step="any" value="3.141592653589793">
-        <label>划分份数 n</label>
-        <input id="integ_n" type="number" value="100" min="1">
-        <div class="hint">辛普森公式会自动将奇数 n 调整为偶数。</div>
-        <button class="run" onclick="runInteg()">开始计算</button>
-        <button class="ghost" onclick="fillSample('integ')">载入示例</button>
-      </div>
-      <div class="output">
-        <div class="msg" id="integ_msg"></div>
-        <div class="result-box"><h3>计算结果</h3><div id="integ_res"></div></div>
-        <div class="chart-title">积分区域（阴影面积）</div>
-        <canvas id="integ_chart"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- 微分方程 -->
-  <div class="panel" data-panel="ode">
-    <div class="panel-head"><h2>常微分方程 ODE</h2><p>求解一阶初值问题 y' = f(x, y)，支持欧拉法与四阶龙格-库塔法。</p></div>
-    <div class="grid">
-      <div class="controls">
-        <label>导数函数 f(x, y)</label>
-        <input id="ode_f" type="text" value="x - y">
-        <div class="hint">支持 x、y 两个变量，如 <code>x+y</code>、<code>-2*y</code>。</div>
-        <div class="row">
-          <div><label>初值 x₀</label><input id="ode_x0" type="number" step="any" value="0"></div>
-          <div><label>初值 y₀</label><input id="ode_y0" type="number" step="any" value="1"></div>
-        </div>
-        <div class="row">
-          <div><label>终点 x</label><input id="ode_xe" type="number" step="any" value="3"></div>
-          <div><label>步长 h</label><input id="ode_h" type="number" step="any" value="0.1"></div>
-        </div>
-        <label>求解方法</label>
-        <select id="ode_method"><option value="rk4">四阶龙格-库塔 (RK4)</option><option value="euler">欧拉法</option></select>
-        <button class="run" onclick="runOde()">开始计算</button>
-      </div>
-      <div class="output">
-        <div class="msg" id="ode_msg"></div>
-        <div class="result-box"><h3>计算结果</h3><div id="ode_res"></div></div>
-        <div class="chart-title">数值解曲线</div>
-        <canvas id="ode_chart"></canvas>
-        <div class="chart-title">逐点数值（前 20 行）</div>
-        <div class="scroll"><table id="ode_table"></table></div>
-      </div>
-    </div>
+<div class="masthead">
+  <div class="row">
+    <div class="brand"><b>数值工具箱</b><span>TOOLBOX / 02</span></div>
+    <nav>
+      <a href="#interp">01 插值</a>
+      <a href="#fit">02 拟合</a>
+      <a href="#root">03 求根</a>
+      <a href="#integ">04 积分</a>
+      <a href="#ode">05 微分</a>
+      <a href="index.html">π 页 →</a>
+    </nav>
   </div>
 </div>
-<footer>数值计算工具箱 · 所有计算均在本地浏览器完成 · 精度仅供学习与工程参考</footer>
+
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow">Numerical · five routines</p>
+      <p class="big-num">05</p>
+      <h1>五种手边的算法</h1>
+      <p class="lead">插值、拟合、求根、积分与微分方程。改动任何参数即时出结果，数据点可以直接在图上拖动。</p>
+    </div>
+    <div class="spec">
+      <span class="cr tl"></span><span class="cr tr"></span>
+      <span class="cr bl"></span><span class="cr br"></span>
+      <div class="srow"><span class="k">01 INTERP</span><span class="v">Lagrange / Newton</span></div>
+      <div class="srow"><span class="k">02 FIT</span><span class="v">Least squares</span></div>
+      <div class="srow"><span class="k">03 ROOT</span><span class="v">Bisect / Newton</span></div>
+      <div class="srow"><span class="k">04 INTEG</span><span class="v">Trapezoid / Simpson</span></div>
+      <div class="srow"><span class="k">05 ODE</span><span class="v">Euler / RK4</span></div>
+      <div class="srow"><span class="k">RUNTIME</span><span class="v">Local · offline</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 01 插值 -->
+  <section id="interp" class="sec">
+    <div class="sec-head"><div class="num">01<b>插值</b></div><h2>过点的曲线</h2></div>
+    <div class="sec-body">
+      <p>给定若干离散点，构造一条严格穿过它们的多项式。改一个点，整条曲线跟着变。</p>
+      <figure>
+        <canvas id="cInterp" class="cv" aria-label="插值曲线，可拖动数据点"></canvas>
+        <figcaption>图 1　拖动圆点改变数据 · 空白处单击加点 · 双击圆点删点</figcaption>
+      </figure>
+      <div class="controls">
+        <div class="seg" data-seg="interp">
+          <button data-v="lagrange" class="on">拉格朗日</button>
+          <button data-v="newton">牛顿</button>
+        </div>
+        <label class="fld"><span class="lb">估算 x</span><input id="iX" type="number" step="0.1" value="2.5"></label>
+        <button class="btn" id="iReset">重置数据</button>
+      </div>
+      <div class="readout">
+        <div><div class="k">f(x)</div><div class="v" id="iVal">—</div></div>
+        <div><div class="k">节点数</div><div class="v" id="iN">5</div></div>
+        <div><div class="k">多项式次数</div><div class="v" id="iDeg">4</div></div>
+      </div>
+      <div class="status" id="sInterp"></div>
+      <p class="note">拉格朗日直接由基函数求和；牛顿用差商表，增加节点时不必全部重算。节点越多，曲线摆动越大——这是龙格现象的来源。</p>
+    </div>
+  </section>
+
+  <!-- 02 拟合 -->
+  <section id="fit" class="sec">
+    <div class="sec-head"><div class="num">02<b>拟合</b></div><h2>最小二乘</h2></div>
+    <div class="sec-body">
+      <p>点不必严格落在曲线上。调整次数，让一条多项式尽量靠近所有点，代价是误差平方和最小。</p>
+      <figure>
+        <canvas id="cFit" class="cv" aria-label="最小二乘拟合，可拖动数据点"></canvas>
+        <figcaption>图 2　竖直虚线为各点残差 · 拖动圆点即时重算</figcaption>
+      </figure>
+      <div class="controls">
+        <div class="slide">
+          <label class="ctl" for="fDeg">次数 <output id="fDegVal">2</output></label>
+          <input type="range" id="fDeg" min="1" max="6" step="1" value="2">
+        </div>
+        <button class="btn" id="fReset">重置数据</button>
+      </div>
+      <div class="readout">
+        <div><div class="k">R²</div><div class="v" id="fR2">—</div></div>
+        <div><div class="k">残差平方和</div><div class="v" id="fSse">—</div></div>
+        <div><div class="k">方程</div><div class="v sm" id="fEq">—</div></div>
+      </div>
+      <div class="status" id="sFit"></div>
+      <p class="note">次数等于点数时，拟合退化为插值，R² 为 1，但对新数据的预测往往更差——过拟合。</p>
+    </div>
+  </section>
+
+  <!-- 03 求根 -->
+  <section id="root" class="sec">
+    <div class="sec-head"><div class="num">03<b>求根</b></div><h2>一步步逼近</h2></div>
+    <div class="sec-body">
+      <p>求 f(x)=0 的根。用单步按钮走一遍迭代，看区间如何折半、切线如何落到横轴上。</p>
+      <figure>
+        <canvas id="cRoot" class="cv" aria-label="求根过程可视化"></canvas>
+        <figcaption>图 3　二分法画区间括线，牛顿法画切线；每一步都落在横轴上</figcaption>
+      </figure>
+      <div class="controls">
+        <label class="fld wide"><span class="lb">f(x)</span><input id="rF" type="text" value="x^3 - x - 2"></label>
+        <div class="seg" data-seg="root">
+          <button data-v="bisect" class="on">二分法</button>
+          <button data-v="newton">牛顿法</button>
+        </div>
+        <label class="fld" id="wrapA"><span class="lb">a</span><input id="rA" type="number" step="0.1" value="1"></label>
+        <label class="fld" id="wrapB"><span class="lb">b</span><input id="rB" type="number" step="0.1" value="2"></label>
+        <label class="fld" id="wrapX0" style="display:none"><span class="lb">x₀</span><input id="rX0" type="number" step="0.1" value="1.5"></label>
+        <button class="btn" id="rStep">单步 →</button>
+        <button class="btn" id="rRun">连续 →</button>
+        <button class="btn" id="rReset">重置</button>
+      </div>
+      <div class="readout">
+        <div><div class="k">近似根</div><div class="v" id="rRoot">—</div></div>
+        <div><div class="k">f(根)</div><div class="v" id="rFV">—</div></div>
+        <div><div class="k">已走步数</div><div class="v" id="rK">0</div></div>
+      </div>
+      <div class="status" id="sRoot"></div>
+      <div class="tbl-wrap"><table class="tbl" id="rTable"></table></div>
+      <p class="note">二分法每步把区间折半，稳定但慢；牛顿法用切线，通常几步就收敛，但初值不好时会发散。</p>
+    </div>
+  </section>
+
+  <!-- 04 积分 -->
+  <section id="integ" class="sec">
+    <div class="sec-head"><div class="num">04<b>积分</b></div><h2>把面积切开</h2></div>
+    <div class="sec-body">
+      <p>把区间切成 n 份，用梯形或抛物线去填每一小块。拖动 n，看近似值怎么向真值靠。</p>
+      <figure>
+        <canvas id="cInteg" class="cv" aria-label="数值积分面积分割"></canvas>
+        <figcaption>图 4　阴影为每一小块近似；n 越大，边缘越贴合曲线</figcaption>
+      </figure>
+      <div class="controls">
+        <label class="fld mid"><span class="lb">f(x)</span><input id="gF" type="text" value="sin(x)"></label>
+        <label class="fld"><span class="lb">a</span><input id="gA" type="number" step="0.1" value="0"></label>
+        <label class="fld"><span class="lb">b</span><input id="gB" type="number" step="0.1" value="3.14159265"></label>
+        <div class="seg" data-seg="integ">
+          <button data-v="trap" class="on">梯形</button>
+          <button data-v="simp">辛普森</button>
+        </div>
+        <div class="slide">
+          <label class="ctl" for="gN">n <output id="gNVal">12</output></label>
+          <input type="range" id="gN" min="2" max="64" step="2" value="12">
+        </div>
+      </div>
+      <div class="readout">
+        <div><div class="k">近似值</div><div class="v" id="gVal">—</div></div>
+        <div><div class="k" id="gOtherK">辛普森 S(n)</div><div class="v" id="gOther">—</div></div>
+        <div><div class="k">|T − S|</div><div class="v" id="gDiff">—</div></div>
+      </div>
+      <div class="status" id="sInteg"></div>
+      <p class="note">梯形公式用直线连接相邻点，误差二阶；辛普森用三点抛物线，误差四阶，同样的 n 精度高得多。</p>
+    </div>
+  </section>
+
+  <!-- 05 微分方程 -->
+  <section id="ode" class="sec">
+    <div class="sec-head"><div class="num">05<b>微分</b></div><h2>沿斜率前进</h2></div>
+    <div class="sec-body">
+      <p>给定 y′ = f(x, y) 与初值，沿着斜率一小步一小步往前走。步长越小越准，代价是步数越多。</p>
+      <figure>
+        <canvas id="cOde" class="cv" aria-label="常微分方程数值解"></canvas>
+        <figcaption>图 5　亮线为所选方法，暗虚线为另一种方法；可播放积分过程</figcaption>
+      </figure>
+      <div class="controls">
+        <label class="fld wide"><span class="lb">f(x, y)</span><input id="oF" type="text" value="x - y"></label>
+        <label class="fld"><span class="lb">x₀</span><input id="oX0" type="number" step="0.1" value="0"></label>
+        <label class="fld"><span class="lb">y₀</span><input id="oY0" type="number" step="0.1" value="1"></label>
+        <label class="fld"><span class="lb">终点</span><input id="oXe" type="number" step="0.1" value="3"></label>
+        <div class="seg" data-seg="ode">
+          <button data-v="rk4" class="on">RK4</button>
+          <button data-v="euler">欧拉</button>
+        </div>
+        <div class="slide">
+          <label class="ctl" for="oH">h <output id="oHVal">0.10</output></label>
+          <input type="range" id="oH" min="0.02" max="0.4" step="0.01" value="0.1">
+        </div>
+        <button class="btn" id="oPlay">播放 →</button>
+      </div>
+      <div class="readout">
+        <div><div class="k">y(终点)</div><div class="v" id="oY">—</div></div>
+        <div><div class="k">另一方法</div><div class="v" id="oY2">—</div></div>
+        <div><div class="k">两者差</div><div class="v" id="oDiff">—</div></div>
+        <div><div class="k">步数</div><div class="v" id="oSteps">—</div></div>
+      </div>
+      <div class="status" id="sOde"></div>
+      <p class="note">欧拉法每步只取一次斜率，误差一阶；RK4 在一步内取四次斜率加权，误差四阶。把 h 调到 0.4，两条线会明显分开。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>数值工具箱 · 五种算法</span>
+  <span>全部计算在本地浏览器完成 · <a href="index.html">← 回到 π 与圆</a></span>
+</footer>
 
 <script>
-/* ============ 通用工具 ============ */
-const $ = id => document.getElementById(id);
-function fmt(v, d=8){
-  if(v===null||v===undefined||Number.isNaN(v)) return '—';
-  if(!isFinite(v)) return v>0?'+∞':'-∞';
-  if(Math.abs(v)<1e-12 && v!==0) return v.toExponential(3);
-  return parseFloat(v.toFixed(d)).toString();
-}
-function showMsg(id, text, type){ const e=$(id); e.className='msg '+type; e.textContent=text; }
-function clearMsg(id){ const e=$(id); e.className='msg'; e.textContent=''; }
+/* ============ 基础 ============ */
+const $=id=>document.getElementById(id);
+const MONO='"SFMono-Regular",Consolas,monospace';
+const INK='#f0efec';
+const DIM='rgba(240,239,236,.42)';
+const FAINT='rgba(240,239,236,.30)';
+const GRID='rgba(240,239,236,.06)';
+const AXIS='rgba(240,239,236,.26)';
 
-// 解析 "x y" 或 "x,y" 文本
-function parsePoints(text){
-  const lines=text.trim().split(/\n+/), pts=[];
-  for(const line of lines){
-    const s=line.trim().replace(/[(),;]/g,' ').trim();
-    if(!s||s.startsWith('#')) continue;
-    const p=s.split(/[\s,]+/).filter(Boolean);
-    if(p.length<2) continue;
-    const x=parseFloat(p[0]), y=parseFloat(p[1]);
-    if(isNaN(x)||isNaN(y)) throw new Error('无法解析数据行：'+line);
-    pts.push({x,y});
-  }
-  if(pts.length<2) throw new Error('至少需要 2 个数据点。');
-  pts.sort((a,b)=>a.x-b.x);
-  // 检查 x 重复
-  for(let i=1;i<pts.length;i++) if(Math.abs(pts[i].x-pts[i-1].x)<1e-12) throw new Error('插值要求 x 互不重复，发现重复 x='+pts[i].x);
-  return pts;
+function setup(cv){
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.clientWidth||640, h=cv.clientHeight||300;
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+function line(ctx,x1,y1,x2,y2){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+function dot(ctx,x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();}
+function fmt(v,d=6){
+  if(v==null||!isFinite(v))return '—';
+  if(Math.abs(v)>=1e5||(v!==0&&Math.abs(v)<1e-4))return v.toExponential(2);
+  return String(+v.toFixed(d));
+}
+function status(id,msg,bad){
+  const el=$(id); el.textContent=msg||''; el.className='status'+(bad?' bad':'');
 }
 
-// 安全编译数学表达式（本地离线工具）
+/* 表达式编译 */
 function compileExpr(str, vars){
   let s=str.trim();
   s=s.replace(/\^/g,'**').replace(/(\d)(\s*)([a-zA-Z])/g,'$1$2*$3').replace(/([a-zA-Z])(\s*)(\d)/g,'$1$2*$3');
   s=s.replace(/\bpi\b/gi,'PI').replace(/\bln\b/gi,'log');
   const names=['sin','cos','tan','asin','acos','atan','atan2','sinh','cosh','tanh','exp','log','log10','log2','sqrt','abs','pow','min','max','floor','ceil','round','sign','trunc','PI','E'];
   const des=names.join(',');
-  try{
-    const fn=new Function(...vars, 'const{'+des+'}=Math; return ('+s+');');
-    const args=vars.map(()=>1); fn(...args);
-    return fn;
-  }catch(e){ throw new Error('函数表达式有误：'+e.message); }
+  let fn;
+  try{ fn=new Function(...vars,'const{'+des+'}=Math; return ('+s+');'); }
+  catch(e){ throw new Error('表达式有误：'+e.message); }
+  try{ fn(...vars.map(()=>1)); }catch(e){ throw new Error('表达式无法求值：'+e.message); }
+  return fn;
 }
 
-/* ============ Canvas 绘图器 ============ */
-function drawPlot(id, opt){
-  const cv=$(id); if(!cv) return;
-  const dpr=window.devicePixelRatio||1;
-  const w=cv.clientWidth||700, h=cv.clientHeight||330;
-  cv.width=w*dpr; cv.height=h*dpr;
-  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
-  const P={l:58,r:16,t:16,b:40}, pw=w-P.l-P.r, ph=h-P.t-P.b;
-  let allX=[],allY=[];
-  (opt.series||[]).forEach(s=>(s.points||[]).forEach(p=>{if(isFinite(p.x)&&isFinite(p.y)){allX.push(p.x);allY.push(p.y);}}));
-  if(!allX.length) return;
-  let xmin=opt.xMin,xmax=opt.xMax,ymin=opt.yMin,ymax=opt.yMax;
-  if(xmin==null)xmin=Math.min(...allX); if(xmax==null)xmax=Math.max(...allX);
-  if(ymin==null)ymin=Math.min(...allY); if(ymax==null)ymax=Math.max(...allY);
-  if(xmin===xmax){xmin-=1;xmax+=1;} if(ymin===ymax){ymin-=1;ymax+=1;}
-  if(opt.pad!==false){
-    const mx=(xmax-xmin)*.06,my=(ymax-ymin)*.12;
-    if(opt.xMin==null)xmin-=mx; if(opt.xMax==null)xmax+=mx;
-    if(opt.yMin==null)ymin-=my; if(opt.yMax==null)ymax+=my;
-  }
-  const X=v=>P.l+(v-xmin)/(xmax-xmin)*pw;
-  const Y=v=>P.t+ph-(v-ymin)/(ymax-ymin)*ph;
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
-  // grid
-  ctx.strokeStyle='#eef1f6';ctx.lineWidth=1;
-  for(let i=0;i<=5;i++){
-    const gx=P.l+pw*i/5;ctx.beginPath();ctx.moveTo(gx,P.t);ctx.lineTo(gx,P.t+ph);ctx.stroke();
-    const gy=P.t+ph*i/5;ctx.beginPath();ctx.moveTo(P.l,gy);ctx.lineTo(P.l+pw,gy);ctx.stroke();
-  }
-  // zero lines
-  ctx.strokeStyle='#d5dceb';ctx.setLineDash([4,4]);
-  if(xmin<0&&xmax>0){ctx.beginPath();ctx.moveTo(X(0),P.t);ctx.lineTo(X(0),P.t+ph);ctx.stroke();}
-  if(ymin<0&&ymax>0){ctx.beginPath();ctx.moveTo(P.l,Y(0));ctx.lineTo(P.l+pw,Y(0));ctx.stroke();}
-  ctx.setLineDash([]);
-  // axes
-  ctx.strokeStyle='#94a3b8';ctx.lineWidth=1.2;
-  ctx.beginPath();ctx.moveTo(P.l,P.t);ctx.lineTo(P.l,P.t+ph);ctx.lineTo(P.l+pw,P.t+ph);ctx.stroke();
-  // ticks
-  ctx.fillStyle='#64748b';ctx.font='11px Consolas,monospace';
-  ctx.textAlign='center';ctx.textBaseline='top';
-  for(let i=0;i<=5;i++)ctx.fillText(fmt(xmin+(xmax-xmin)*i/5,3),P.l+pw*i/5,P.t+ph+8);
-  ctx.textAlign='right';ctx.textBaseline='middle';
-  for(let i=0;i<=5;i++)ctx.fillText(fmt(ymin+(ymax-ymin)*i/5,3),P.l-8,P.t+ph-ph*i/5);
-  // series
-  (opt.series||[]).forEach(s=>{
-    const pts=(s.points||[]).filter(p=>isFinite(p.x)&&isFinite(p.y)); if(!pts.length)return;
+/* 刻度 */
+function niceTicks(min,max,count){
+  const span=max-min;
+  if(!(span>0))return [];
+  const raw=span/count;
+  const mag=Math.pow(10,Math.floor(Math.log10(raw)));
+  const n=raw/mag;
+  const step=(n<=1?1:n<=2?2:n<=5?5:10)*mag;
+  const start=Math.ceil(min/step)*step;
+  const out=[];
+  for(let v=start;v<=max+step*1e-6;v+=step) out.push(+v.toFixed(10));
+  out.step=step;
+  return out;
+}
+function tickFmt(v,step){
+  const d=Math.max(0,Math.min(5,-Math.floor(Math.log10(step))));
+  return (+v.toFixed(d)).toString();
+}
+
+/* 绘图 */
+function chart(cv,cfg){
+  const {ctx,w,h}=setup(cv);
+  const P={l:44,r:14,t:16,b:26};
+  const x0=P.l, y0=P.t, pw=Math.max(20,w-P.l-P.r), ph=Math.max(20,h-P.t-P.b);
+
+  let xs=[],ys=[];
+  (cfg.series||[]).forEach(s=>(s.pts||[]).forEach(p=>{
+    if(p&&isFinite(p.x)&&isFinite(p.y)){xs.push(p.x);ys.push(p.y);}
+  }));
+  let xmin=cfg.xMin, xmax=cfg.xMax, ymin=cfg.yMin, ymax=cfg.yMax;
+  if(xmin==null)xmin=Math.min(...xs); if(xmax==null)xmax=Math.max(...xs);
+  if(ymin==null)ymin=Math.min(...ys); if(ymax==null)ymax=Math.max(...ys);
+  if(!(xmax>xmin)){xmin-=1;xmax+=1;}
+  if(!(ymax>ymin)){ymin-=1;ymax+=1;}
+
+  const X=v=>x0+(v-xmin)/(xmax-xmin)*pw;
+  const Y=v=>y0+ph-(v-ymin)/(ymax-ymin)*ph;
+  const T={ctx,w,h,P,x0,y0,pw,ph,X,Y,xmin,xmax,ymin,ymax,
+    data(px,py){return{x:xmin+(px-x0)/pw*(xmax-xmin), y:ymin+(y0+ph-py)/ph*(ymax-ymin)};}};
+
+  /* 网格 */
+  const xt=niceTicks(xmin,xmax,5), yt=niceTicks(ymin,ymax,4);
+  ctx.strokeStyle=GRID; ctx.lineWidth=1;
+  xt.forEach(v=>{
+    const gx=Math.round(X(v))+.5;
+    if(gx>x0&&gx<x0+pw) line(ctx,gx,y0,gx,y0+ph);
+  });
+  yt.forEach(v=>{
+    const gy=Math.round(Y(v))+.5;
+    if(gy>y0&&gy<y0+ph) line(ctx,x0,gy,x0+pw,gy);
+  });
+  /* 零轴 */
+  ctx.strokeStyle=AXIS;
+  if(ymin<0&&ymax>0){const zy=Math.round(Y(0))+.5; line(ctx,x0,zy,x0+pw,zy);}
+  if(xmin<0&&xmax>0){const zx=Math.round(X(0))+.5; line(ctx,zx,y0,zx,y0+ph);}
+
+  /* 曲线（裁剪） */
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,pw,ph); ctx.clip();
+  (cfg.series||[]).forEach(s=>{
+    const pts=(s.pts||[]).filter(p=>p&&isFinite(p.x)&&isFinite(p.y));
+    if(!pts.length)return;
     if(s.fill){
-      const base=Y(s.fillTo==='zero'?0:ymin);
-      ctx.beginPath();ctx.moveTo(X(pts[0].x),base);
+      const base=Y(0);
+      ctx.beginPath(); ctx.moveTo(X(pts[0].x),base);
       pts.forEach(p=>ctx.lineTo(X(p.x),Y(p.y)));
-      ctx.lineTo(X(pts[pts.length-1].x),base);ctx.closePath();
-      ctx.fillStyle=s.fill;ctx.fill();
+      ctx.lineTo(X(pts[pts.length-1].x),base); ctx.closePath();
+      ctx.fillStyle=s.fill; ctx.fill();
+    }
+    if(s.type==='points'){
+      pts.forEach(p=>{
+        ctx.beginPath(); ctx.arc(X(p.x),Y(p.y),s.r||4,0,Math.PI*2);
+        ctx.fillStyle='#0a0a0a'; ctx.fill();
+        ctx.strokeStyle=s.color||INK; ctx.lineWidth=1.4; ctx.stroke();
+      });
+      return;
+    }
+    if(s.type==='dots'){
+      pts.forEach(p=>dot(ctx,X(p.x),Y(p.y),s.r||2.6,s.color||INK));
+      return;
     }
     if(s.line!==false){
-      ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(X(p.x),Y(p.y)):ctx.moveTo(X(p.x),Y(p.y)));
-      ctx.strokeStyle=s.color||'#4f46e5';ctx.lineWidth=s.width||2;
-      if(s.dash)ctx.setLineDash(s.dash);ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();
+      pts.forEach((p,i)=>i?ctx.lineTo(X(p.x),Y(p.y)):ctx.moveTo(X(p.x),Y(p.y)));
+      ctx.strokeStyle=s.color||INK; ctx.lineWidth=s.width||1.5;
+      if(s.dash)ctx.setLineDash(s.dash);
+      ctx.stroke(); ctx.setLineDash([]);
     }
-    if(s.pointRadius){
-      pts.forEach(p=>{ctx.beginPath();ctx.arc(X(p.x),Y(p.y),s.pointRadius,0,7);ctx.fillStyle=s.color||'#4f46e5';ctx.fill();});
+  });
+  if(cfg.overlay) cfg.overlay(ctx,T);
+  ctx.restore();
+
+  /* 刻度 */
+  ctx.font='9px '+MONO; ctx.fillStyle=FAINT; ctx.textBaseline='top';
+  xt.forEach((v,i)=>{
+    ctx.textAlign = i===0?'left':(i===xt.length-1?'right':'center');
+    ctx.fillText(tickFmt(v,xt.step), X(v), y0+ph+7);
+  });
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  yt.forEach(v=>{
+    const py=Y(v);
+    if(py>y0+ph-11)return;
+    ctx.fillText(tickFmt(v,yt.step), x0-8, py);
+  });
+
+  return T;
+}
+
+/* 数据点拖动 */
+function attachPoints(cv,st,redraw){
+  let drag=-1;
+  const pos=ev=>{const r=cv.getBoundingClientRect();return{x:ev.clientX-r.left,y:ev.clientY-r.top};};
+  const nearest=(p)=>{
+    const T=st.T; if(!T)return -1;
+    let bi=-1,bd=15;
+    st.pts.forEach((q,i)=>{
+      const d=Math.hypot(T.X(q.x)-p.x,T.Y(q.y)-p.y);
+      if(d<bd){bd=d;bi=i;}
+    });
+    return bi;
+  };
+  cv.addEventListener('pointerdown',ev=>{
+    const T=st.T; if(!T)return;
+    const p=pos(ev);
+    const i=nearest(p);
+    st.dragging=false;
+    if(i>=0){ drag=i; }
+    else{
+      if(p.x<T.x0||p.x>T.x0+T.pw||p.y<T.y0||p.y>T.y0+T.ph)return;
+      if(st.pts.length>=14)return;
+      const d=T.data(p.x,p.y);
+      st.pts.push({x:d.x,y:d.y}); drag=st.pts.length-1;
     }
+    redraw();                 // 先更新坐标域
+    st.dragging=true;
+    cv.setPointerCapture(ev.pointerId);
+    cv.style.cursor='grabbing';
+  });
+  cv.addEventListener('pointermove',ev=>{
+    const T=st.T; if(!T)return;
+    const p=pos(ev);
+    if(drag<0){
+      cv.style.cursor=nearest(p)>=0?'grab':'crosshair';
+      return;
+    }
+    const d=T.data(p.x,p.y);
+    const padX=(T.xmax-T.xmin)*0.02, padY=(T.ymax-T.ymin)*0.02;
+    st.pts[drag]={
+      x:Math.max(T.xmin+padX,Math.min(T.xmax-padX,d.x)),
+      y:Math.max(T.ymin+padY,Math.min(T.ymax-padY,d.y))
+    };
+    redraw();
+  });
+  const end=()=>{drag=-1;st.dragging=false;cv.style.cursor='crosshair';};
+  cv.addEventListener('pointerup',end);
+  cv.addEventListener('pointercancel',end);
+  cv.addEventListener('dblclick',ev=>{
+    const p=pos(ev), i=nearest(p);
+    if(i>=0&&st.pts.length>2){ st.pts.splice(i,1); redraw(); }
   });
 }
 
-/* ============ 1. 插值 ============ */
-function lagrangeEval(pts,x){
+function autoDom(pts,padX,padY){
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  let xmin=Math.min(...xs), xmax=Math.max(...xs);
+  let ymin=Math.min(...ys), ymax=Math.max(...ys);
+  if(!(xmax>xmin)){xmin-=1;xmax+=1;}
+  if(!(ymax>ymin)){ymin-=1;ymax+=1;}
+  const dx=(xmax-xmin)*padX, dy=(ymax-ymin)*padY;
+  return {xmin:xmin-dx,xmax:xmax+dx,ymin:ymin-dy,ymax:ymax+dy};
+}
+
+/* 分段控件 */
+document.querySelectorAll('.seg').forEach(seg=>{
+  seg.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    const key=seg.dataset.seg, v=b.dataset.v;
+    if(key==='interp'){ I.method=v; drawInterp(); }
+    if(key==='root'){ R.method=v; $('wrapA').style.display=$('wrapB').style.display=(v==='bisect'?'inline-flex':'none');
+      $('wrapX0').style.display=(v==='newton'?'inline-flex':'none'); rootReset(); }
+    if(key==='integ'){ G.method=v; drawInteg(); }
+    if(key==='ode'){ O.method=v; drawOde(); }
+  });
+});
+
+/* ============ 01 插值 ============ */
+const I={pts:[{x:0,y:1},{x:1,y:3},{x:2,y:2},{x:3,y:4},{x:4,y:3}],
+  method:'lagrange',x:2.5,dom:null,dragging:false,T:null};
+
+function lagrange(pts,x){
   let r=0;
   for(let i=0;i<pts.length;i++){
     let t=pts[i].y;
@@ -352,59 +600,84 @@ function lagrangeEval(pts,x){
   return r;
 }
 function newtonCoeff(pts){
-  const n=pts.length, c=pts.map(p=>p.y); // 差商表首列
+  const n=pts.length, c=pts.map(p=>p.y);
   for(let j=1;j<n;j++) for(let i=n-1;i>=j;i--) c[i]=(c[i]-c[i-1])/(pts[i].x-pts[i-j].x);
-  return c; // c[i] = f[x0..xi]
+  return c;
 }
 function newtonEval(pts,c,x){
   let r=c[pts.length-1];
   for(let i=pts.length-2;i>=0;i--) r=r*(x-pts[i].x)+c[i];
   return r;
 }
-function runInterp(){
-  clearMsg('interp_msg');
-  try{
-    const pts=parsePoints($('interp_pts').value);
-    const x=parseFloat($('interp_x').value);
-    if(isNaN(x)) throw new Error('请输入有效的待估算 x。');
-    const method=$('interp_method').value;
-    let evalFn, extra='';
-    if(method==='lagrange'){ evalFn=xx=>lagrangeEval(pts,xx); }
-    else{
-      const c=newtonCoeff(pts); evalFn=xx=>newtonEval(pts,c,xx);
-      extra='<div class="kv"><span class="k">差商系数 cᵢ</span><span class="v">'+c.map(v=>fmt(v,6)).join(', ')+'</span></div>';
+
+function drawInterp(){
+  const st=I;
+  const pts=st.pts.slice().sort((a,b)=>a.x-b.x);
+  let dup=false;
+  for(let i=1;i<pts.length;i++) if(Math.abs(pts[i].x-pts[i-1].x)<1e-7) dup=true;
+
+  if(!st.dragging||!st.dom) st.dom=autoDom(st.pts,0.12,0.28);
+  const d=st.dom;
+
+  let val=null, series=[];
+  if(!dup&&pts.length>=2){
+    let ev;
+    if(st.method==='lagrange') ev=xx=>lagrange(pts,xx);
+    else{ const c=newtonCoeff(pts); ev=xx=>newtonEval(pts,c,xx); }
+    const curve=[];
+    for(let i=0;i<=420;i++){
+      const xx=d.xmin+(d.xmax-d.xmin)*i/420;
+      const yy=ev(xx);
+      curve.push({x:xx,y:isFinite(yy)?yy:null});
     }
-    const y=evalFn(x);
-    $('interp_res').innerHTML=
-      '<div class="kv"><span class="k">数据点数</span><span class="v">'+pts.length+'</span></div>'+
-      '<div class="kv"><span class="k">方法</span><span class="v">'+(method==='lagrange'?'拉格朗日':'牛顿')+'</span></div>'+
-      '<div class="kv"><span class="k">f('+fmt(x,6)+') ≈</span><span class="v" style="color:#4f46e5;font-size:17px">'+fmt(y)+'</span></div>'+extra;
-    // 曲线
-    const xmin=pts[0].x, xmax=pts[pts.length-1].x, N=300, curve=[];
-    for(let i=0;i<=N;i++){const xx=xmin+(xmax-xmin)*i/N;curve.push({x:xx,y:evalFn(xx)});}
-    drawPlot('interp_chart',{series:[
-      {points:curve,color:'#4f46e5',width:2},
-      {points:pts,color:'#dc2626',line:false,pointRadius:5}
-    ]});
-    showMsg('interp_msg','计算完成。','ok');
-  }catch(e){ showMsg('interp_msg',e.message,'err'); }
+    series.push({pts:curve,color:INK,width:1.6});
+    val=ev(st.x);
+  }
+  series.push({pts:st.pts,type:'points',color:INK,r:4});
+
+  const T=chart($('cInterp'),{series,xMin:d.xmin,xMax:d.xmax,yMin:d.ymin,yMax:d.ymax,
+    overlay:(ctx,T)=>{
+      if(val==null||!isFinite(val))return;
+      const px=T.X(st.x);
+      if(px<T.x0||px>T.x0+T.pw)return;
+      ctx.setLineDash([3,5]); ctx.strokeStyle='rgba(240,239,236,.22)'; ctx.lineWidth=1;
+      line(ctx,px,T.y0,px,T.y0+T.ph); ctx.setLineDash([]);
+      const py=T.Y(val);
+      if(py>T.y0&&py<T.y0+T.ph) dot(ctx,px,py,3.2,INK);
+    }});
+  st.T=T;
+
+  $('iVal').textContent=val==null?'—':fmt(val,6);
+  $('iN').textContent=pts.length;
+  $('iDeg').textContent=Math.max(0,pts.length-1);
+  if(dup) status('sInterp','x 重复，无法作插值多项式',true);
+  else if(pts.length<2) status('sInterp','至少需要两个点',true);
+  else status('sInterp',st.method==='lagrange'?'拉格朗日基函数逐个求和':'牛顿差商表已更新');
 }
 
-/* ============ 2. 拟合 ============ */
+$('iX').addEventListener('input',e=>{ I.x=parseFloat(e.target.value); drawInterp(); });
+$('iReset').addEventListener('click',()=>{
+  I.pts=[{x:0,y:1},{x:1,y:3},{x:2,y:2},{x:3,y:4},{x:4,y:3}];
+  I.dom=null; drawInterp();
+});
+attachPoints($('cInterp'),I,drawInterp);
+
+/* ============ 02 拟合 ============ */
+const F={pts:[{x:0,y:0.9},{x:1,y:3.1},{x:2,y:5.0},{x:3,y:6.9},{x:4,y:9.2},{x:5,y:11.1}],
+  deg:2,dom:null,dragging:false,T:null};
+
 function polyFit(pts,deg){
-  // 用正规方程 + 高斯消元求解最小二乘多项式系数 [a0..adeg]
   const m=deg+1, A=[], b=[];
   for(let i=0;i<m;i++){
     A.push(new Array(m).fill(0));
     for(let j=0;j<m;j++) A[i][j]=pts.reduce((s,p)=>s+Math.pow(p.x,i+j),0);
     b[i]=pts.reduce((s,p)=>s+p.y*Math.pow(p.x,i),0);
   }
-  // 高斯消元（列主元）
   for(let col=0;col<m;col++){
     let piv=col;
     for(let r=col+1;r<m;r++) if(Math.abs(A[r][col])>Math.abs(A[piv][col])) piv=r;
-    if(Math.abs(A[piv][col])<1e-14) throw new Error('矩阵奇异，请降低多项式次数。');
-    [A[col],A[piv]]=[A[piv],A[col]];[b[col],b[piv]]=[b[piv],b[col]];
+    if(Math.abs(A[piv][col])<1e-13) throw new Error('矩阵奇异，请降低次数');
+    [A[col],A[piv]]=[A[piv],A[col]]; [b[col],b[piv]]=[b[piv],b[col]];
     for(let r=col+1;r<m;r++){
       const f=A[r][col]/A[col][col];
       for(let c=col;c<m;c++) A[r][c]-=f*A[col][c];
@@ -412,215 +685,441 @@ function polyFit(pts,deg){
     }
   }
   const coef=new Array(m).fill(0);
-  for(let i=m-1;i>=0;i--){let s=b[i];for(let j=i+1;j<m;j++)s-=A[i][j]*coef[j];coef[i]=s/A[i][i];}
-  return coef; // a0 + a1 x + ...
+  for(let i=m-1;i>=0;i--){
+    let s=b[i];
+    for(let j=i+1;j<m;j++) s-=A[i][j]*coef[j];
+    coef[i]=s/A[i][i];
+  }
+  return coef;
 }
-function polyEval(coef,x){let r=0;for(let i=coef.length-1;i>=0;i--)r=r*x+coef[i];return r;}
-function rSquared(pts,coef){
-  const mean=pts.reduce((s,p)=>s+p.y,0)/pts.length;
-  let ssRes=0,ssTot=0;
-  pts.forEach(p=>{ssRes+=Math.pow(p.y-polyEval(coef,p.x),2);ssTot+=Math.pow(p.y-mean,2);});
-  return ssTot<1e-14?1:1-ssRes/ssTot;
-}
-function toggleDegree(){ $('fit_degree_wrap').style.display = $('fit_method').value==='poly'?'block':'none'; }
-function runFit(){
-  clearMsg('fit_msg');
-  try{
-    const pts=parsePoints($('fit_pts').value);
-    let deg,coef;
-    if($('fit_method').value==='linear'){deg=1;}
-    else{deg=parseInt($('fit_degree').value);if(!(deg>=1&&deg<=8))throw new Error('多项式次数需在 1~8 之间。');}
-    if(deg>=pts.length) throw new Error('次数需小于数据点数。');
-    coef=polyFit(pts,deg);
-    const r2=rSquared(pts,coef);
-    const terms=coef.map((c,i)=>{
-      if(i===0)return fmt(c,6);
-      const v=fmt(c,6);
-      if(i===1)return v+'x';
-      return v+'x^'+i;
-    }).reverse().join(' + ');
-    $('fit_res').innerHTML=
-      '<div class="kv"><span class="k">拟合类型</span><span class="v">'+(deg===1?'线性':'多项式 (次数 '+deg+')')+'</span></div>'+
-      '<div class="kv"><span class="k">拟合优度 R²</span><span class="v" style="color:'+(r2>.9?'#0f9d58':'#d97706')+'">'+fmt(r2,8)+'</span></div>'+
-      '<div class="formula">y = '+terms+'</div>';
-    const xmin=pts[0].x,xmax=pts[pts.length-1].x,N=300,curve=[];
-    for(let i=0;i<=N;i++){const xx=xmin+(xmax-xmin)*i/N;curve.push({x:xx,y:polyEval(coef,xx)});}
-    drawPlot('fit_chart',{series:[
-      {points:pts,color:'#dc2626',line:false,pointRadius:5},
-      {points:curve,color:'#4f46e5',width:2}
-    ]});
-    showMsg('fit_msg','拟合完成。','ok');
-  }catch(e){ showMsg('fit_msg',e.message,'err'); }
+function polyEval(c,x){let r=0;for(let i=c.length-1;i>=0;i--) r=r*x+c[i];return r;}
+function fmtPoly(c){
+  const sup={2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶'};
+  return c.map((v,i)=>{
+    const n=fmt(v,4);
+    if(i===0) return n;
+    if(i===1) return (v<0?'− ':'+ ')+Math.abs(v).toFixed(4)+'x';
+    return (v<0?'− ':'+ ')+Math.abs(v).toFixed(4)+'x'+(sup[i]||'^'+i);
+  }).join(' ').replace(/^\+ /,'');
 }
 
-/* ============ 3. 求根 ============ */
-function toggleRootInputs(){
-  $('root_bisect').style.display=$('root_method').value==='bisect'?'block':'none';
-  $('root_newton').style.display=$('root_method').value==='newton'?'block':'none';
+function drawFit(){
+  const st=F;
+  if(!st.dragging||!st.dom) st.dom=autoDom(st.pts,0.12,0.12);
+  const d=st.dom, n=st.pts.length;
+  let coef=null, r2=null, sse=null, msg='';
+
+  if(n>st.deg){
+    try{ coef=polyFit(st.pts,st.deg); }
+    catch(e){ msg=e.message; }
+  }else{
+    msg='次数需小于点数 (n='+n+')';
+  }
+
+  if(coef){
+    const mean=st.pts.reduce((s,p)=>s+p.y,0)/n;
+    let ssr=0, sst=0;
+    st.pts.forEach(p=>{ const e=p.y-polyEval(coef,p.x); ssr+=e*e; sst+=(p.y-mean)*(p.y-mean); });
+    sse=ssr; r2=sst<1e-12?1:1-ssr/sst;
+  }
+
+  const series=[];
+  if(coef){
+    const curve=[];
+    for(let i=0;i<=420;i++){
+      const xx=d.xmin+(d.xmax-d.xmin)*i/420;
+      curve.push({x:xx,y:polyEval(coef,xx)});
+    }
+    series.push({pts:curve,color:INK,width:1.7});
+  }
+  series.push({pts:st.pts,type:'points',color:INK,r:4});
+
+  const T=chart($('cFit'),{series,xMin:d.xmin,xMax:d.xmax,yMin:d.ymin,yMax:d.ymax,
+    overlay:(ctx,T)=>{
+      if(!coef)return;
+      ctx.strokeStyle='rgba(240,239,236,.22)'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+      st.pts.forEach(p=>{
+        const yc=polyEval(coef,p.x);
+        line(ctx,T.X(p.x),T.Y(p.y),T.X(p.x),T.Y(yc));
+      });
+      ctx.setLineDash([]);
+    }});
+  st.T=T;
+
+  $('fR2').textContent=r2==null?'—':r2.toFixed(5);
+  $('fSse').textContent=sse==null?'—':fmt(sse,6);
+  $('fEq').textContent=coef?('y = '+fmtPoly(coef)):'—';
+  status('sFit',msg||('最小二乘 · '+st.deg+' 次 · '+(r2>0.98?'拟合良好':'残差可见')),!!msg);
 }
-function tableHTML(headers,rows){
-  let h='<thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
-  rows.forEach(r=>{h+='<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>';});
-  return h+'</tbody>';
+
+$('fDeg').addEventListener('input',e=>{
+  F.deg=parseInt(e.target.value,10);
+  $('fDegVal').textContent=F.deg;
+  drawFit();
+});
+$('fReset').addEventListener('click',()=>{
+  F.pts=[{x:0,y:0.9},{x:1,y:3.1},{x:2,y:5.0},{x:3,y:6.9},{x:4,y:9.2},{x:5,y:11.1}];
+  F.dom=null; drawFit();
+});
+attachPoints($('cFit'),F,drawFit);
+
+/* ============ 03 求根 ============ */
+const R={f:'x^3 - x - 2',method:'bisect',a:1,b:2,x0:1.5,
+  fn:null,cur:null,iters:[],last:null,done:false,timer:null,err:null,T:null};
+
+function rootReset(){
+  R.iters=[]; R.last=null; R.done=false; R.cur=null; R.err=null;
+  if(R.timer){clearInterval(R.timer);R.timer=null;$('rRun').textContent='连续 →';}
+  try{ R.fn=compileExpr(R.f,['x']); }
+  catch(e){ R.fn=null; R.err=e.message; }
+  drawRoot();
 }
-function runRoot(){
-  clearMsg('root_msg');
-  try{
-    const f=compileExpr($('root_f').value,['x']);
-    const tol=parseFloat($('root_tol').value), max=parseInt($('root_max').value);
-    if(!(tol>0))throw new Error('精度 ε 必须为正数。');
-    const method=$('root_method').value, iter=[];
-    let root=null;
-    if(method==='bisect'){
-      let a=parseFloat($('root_a').value), b=parseFloat($('root_b').value);
-      if(isNaN(a)||isNaN(b))throw new Error('请输入有效的区间端点。');
-      let fa=f(a);
-      if(Math.abs(fa)<tol){root=a;}
-      else{
-        for(let k=1;k<=max;k++){
-          const mid=(a+b)/2, fm=f(mid);
-          iter.push([k,fmt(a,7),fmt(b,7),fmt(mid,10),fmt(fm,4)]);
-          if(Math.abs(fm)<tol||(b-a)/2<tol){root=mid;break;}
-          if(fa*fm<0)b=mid;else{a=mid;fa=fm;}
+
+function rootStep(){
+  if(!R.fn){ return false; }
+  if(R.done) return false;
+
+  if(R.method==='bisect'){
+    let a=R.cur?R.cur.a:R.a, b=R.cur?R.cur.b:R.b;
+    let fa=R.cur?R.cur.fa:R.fn(a), fb=R.fn(b);
+    if(fa*fb>0){ R.err='端点同号，区间内可能无根'; R.done=true; drawRoot(); return false; }
+    const mid=(a+b)/2, fm=R.fn(mid);
+    R.iters.push({k:R.iters.length+1,a,b,mid,fm});
+    R.last=mid;
+    if(Math.abs(fm)<1e-10||(b-a)/2<1e-10) R.done=true;
+    if(fa*fm<=0){ b=mid; } else { a=mid; fa=fm; }
+    R.cur={a,b,fa};
+  }else{
+    const x=R.cur?R.cur.x:R.x0;
+    const fx=R.fn(x);
+    const df=(R.fn(x+1e-6)-R.fn(x-1e-6))/2e-6;
+    if(!isFinite(df)||Math.abs(df)<1e-13){
+      R.err='导数接近 0，换一个初值试试'; R.done=true; drawRoot(); return false;
+    }
+    const nx=x-fx/df;
+    R.iters.push({k:R.iters.length+1,x,fx,nx});
+    R.last=nx;
+    if(Math.abs(nx-x)<1e-9||Math.abs(R.fn(nx))<1e-9) R.done=true;
+    R.cur={x:nx,from:x,fx};
+  }
+  if(R.iters.length>=36) R.done=true;
+  drawRoot();
+  return !R.done;
+}
+
+function drawRoot(){
+  const st=R;
+  let xmin,xmax;
+  if(st.method==='bisect'){
+    const span=Math.abs(st.b-st.a)||2;
+    xmin=st.a-span*0.9; xmax=st.b+span*0.9;
+  }else{
+    xmin=st.x0-3; xmax=st.x0+3;
+  }
+
+  let curve=[];
+  if(st.fn){
+    for(let i=0;i<=460;i++){
+      const xx=xmin+(xmax-xmin)*i/460;
+      let yy; try{ yy=st.fn(xx); }catch(e){ yy=NaN; }
+      curve.push({x:xx,y:isFinite(yy)?yy:null});
+    }
+  }
+  let ymin=-6,ymax=6;
+  const ys=curve.filter(p=>p.y!=null).map(p=>p.y).sort((a,b)=>a-b);
+  if(ys.length){
+    const lo=ys[Math.floor(ys.length*0.02)], hi=ys[Math.floor(ys.length*0.98)];
+    ymin=Math.min(lo,0)-Math.max(1,(hi-lo)*0.12);
+    ymax=Math.max(hi,0)+Math.max(1,(hi-lo)*0.12);
+  }
+
+  const T=chart($('cRoot'),{series:[{pts:curve,color:'rgba(240,239,236,.62)',width:1.5}],
+    xMin:xmin,xMax:xmax,yMin:ymin,yMax:ymax,
+    overlay:(ctx,T)=>{
+      ctx.strokeStyle=INK; ctx.lineWidth=1.4;
+      if(st.method==='bisect'){
+        const a=st.cur?st.cur.a:st.a, b=st.cur?st.cur.b:st.b;
+        const yz=T.Y(0), yb=yz-12, hh=6;
+        ctx.beginPath(); ctx.moveTo(T.X(a),yb-hh); ctx.lineTo(T.X(a),yb+hh); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(T.X(b),yb-hh); ctx.lineTo(T.X(b),yb+hh); ctx.stroke();
+        ctx.strokeStyle='rgba(240,239,236,.85)'; ctx.lineWidth=1.5;
+        line(ctx,T.X(a),yb,T.X(b),yb);
+        ctx.strokeStyle=INK;
+        if(st.last!=null){
+          ctx.setLineDash([2,3]); ctx.strokeStyle='rgba(240,239,236,.3)'; ctx.lineWidth=1;
+          line(ctx,T.X(st.last),yb,T.X(st.last),yz); ctx.setLineDash([]);
+          dot(ctx,T.X(st.last),yz,2.8,INK);
+        }
+      }else{
+        const c=st.cur;
+        if(c&&c.from!=null){
+          const x0=c.from, y0=st.fn(x0), x1=c.x;
+          const yz=T.Y(0);
+          ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(240,239,236,.4)'; ctx.lineWidth=1;
+          line(ctx,T.X(x0),T.Y(y0),T.X(x1),yz);
+          ctx.setLineDash([]);
+          dot(ctx,T.X(x0),T.Y(y0),2.6,'rgba(240,239,236,.5)');
+        }
+        if(st.last!=null){
+          ctx.strokeStyle=INK; ctx.lineWidth=1.4;
+          line(ctx,T.X(st.last),T.Y(0)-6,T.X(st.last),T.Y(0)+6);
+          dot(ctx,T.X(st.last),T.Y(0),3.2,INK);
         }
       }
-    }else{
-      let x=parseFloat($('root_x0').value);
-      if(isNaN(x))throw new Error('请输入有效的初值。');
-      const dfText=$('root_df').value.trim();
-      const df=dfText?compileExpr(dfText,['x']):(xx=>{const h=1e-6;return(f(xx+h)-f(xx-h))/(2*h);});
-      for(let k=0;k<=max;k++){
-        const fx=f(x);iter.push([k,fmt(x,10),fmt(fx,4)]);
-        if(Math.abs(fx)<tol){root=x;break;}
-        const d=df(x);
-        if(Math.abs(d)<1e-14)throw new Error('导数接近 0，牛顿法无法继续，请更换初值。');
-        const nx=x-fx/d;
-        if(Math.abs(nx-x)<tol){root=nx;iter.push([k+1,fmt(nx,10),fmt(f(nx),4)]);break;}
-        x=nx;
-      }
+    }});
+  st.T=T;
+
+  $('rRoot').textContent=st.last==null?'—':fmt(st.last,9);
+  $('rFV').textContent=(st.last!=null&&st.fn)?fmt(st.fn(st.last),6):'—';
+  $('rK').textContent=st.iters.length;
+
+  if(st.err) status('sRoot',st.err,true);
+  else if(st.done&&st.last!=null) status('sRoot','已收敛 · '+st.iters.length+' 步');
+  else if(st.iters.length===0) status('sRoot',st.method==='bisect'?'按「单步」开始折半':'按「单步」走一次切线');
+  else status('sRoot','未收敛，继续');
+
+  /* 表格 */
+  const rows=st.iters.slice(-12);
+  if(!rows.length){ $('rTable').innerHTML=''; return; }
+  if(st.method==='bisect'){
+    $('rTable').innerHTML='<thead><tr><th>k</th><th>a</th><th>b</th><th>中点</th><th>f(中点)</th></tr></thead><tbody>'+
+      rows.map(r=>'<tr><td>'+r.k+'</td><td>'+fmt(r.a,6)+'</td><td>'+fmt(r.b,6)+'</td><td>'+fmt(r.mid,8)+'</td><td>'+fmt(r.fm,4)+'</td></tr>').join('')+
+      '</tbody>';
+  }else{
+    $('rTable').innerHTML='<thead><tr><th>k</th><th>x</th><th>f(x)</th><th>x′</th></tr></thead><tbody>'+
+      rows.map(r=>'<tr><td>'+r.k+'</td><td>'+fmt(r.x,8)+'</td><td>'+fmt(r.fx,4)+'</td><td>'+fmt(r.nx,8)+'</td></tr>').join('')+
+      '</tbody>';
+  }
+}
+
+['rA','rB','rX0'].forEach(id=>$(id).addEventListener('input',()=>{
+  R.a=parseFloat($('rA').value); R.b=parseFloat($('rB').value); R.x0=parseFloat($('rX0').value);
+  rootReset();
+}));
+$('rF').addEventListener('input',e=>{ R.f=e.target.value; rootReset(); });
+$('rStep').addEventListener('click',()=>{ rootStep(); });
+$('rRun').addEventListener('click',function(){
+  if(R.timer){ clearInterval(R.timer); R.timer=null; this.textContent='连续 →'; return; }
+  this.textContent='暂停';
+  R.timer=setInterval(()=>{
+    const go=rootStep();
+    if(!go){ clearInterval(R.timer); R.timer=null; $('rRun').textContent='连续 →'; }
+  },420);
+});
+$('rReset').addEventListener('click',()=>rootReset());
+
+/* ============ 04 积分 ============ */
+const G={f:'sin(x)',a:0,b:Math.PI,n:12,method:'trap',fn:null,err:null};
+
+function trapz(fn,a,b,n){
+  const h=(b-a)/n;
+  let s=(fn(a)+fn(b))/2;
+  for(let i=1;i<n;i++) s+=fn(a+i*h);
+  return s*h;
+}
+function simpson(fn,a,b,n){
+  const h=(b-a)/n;
+  let s=fn(a)+fn(b);
+  for(let i=1;i<n;i++) s+=(i%2?4:2)*fn(a+i*h);
+  return s*h/3;
+}
+function drawInteg(){
+  try{ G.fn=compileExpr(G.f,['x']); G.err=null; }
+  catch(e){ G.fn=null; G.err=e.message; }
+
+  const a=Math.min(G.a,G.b), b=Math.max(G.a,G.b), n=G.n;
+  let curve=[], ymin=-1, ymax=1;
+  if(G.fn){
+    for(let i=0;i<=400;i++){
+      const xx=a+(b-a)*i/400;
+      let yy; try{ yy=G.fn(xx); }catch(e){ yy=NaN; }
+      curve.push({x:xx,y:isFinite(yy)?yy:null});
     }
-    if(root===null)throw new Error('达到最大迭代次数仍未收敛，请调整参数或方法。');
-    $('root_res').innerHTML=
-      '<div class="kv"><span class="k">求根方法</span><span class="v">'+(method==='bisect'?'二分法':'牛顿法')+'</span></div>'+
-      '<div class="kv"><span class="k">近似根 x ≈</span><span class="v" style="color:#4f46e5;font-size:17px">'+fmt(root,10)+'</span></div>'+
-      '<div class="kv"><span class="k">f(x) ≈</span><span class="v">'+fmt(f(root),4)+'</span></div>'+
-      '<div class="kv"><span class="k">迭代次数</span><span class="v">'+(iter.length)+'</span></div>';
-    $('root_table').innerHTML=tableHTML(
-      method==='bisect'?['k','a','b','中点','f(中点)']:['k','xₖ','f(xₖ)'], iter);
-    // 画图：以根为中心取范围
-    let cx=root, span=Math.max(2,Math.abs(root)*0.5+2);
-    const a=cx-span,b=cx+span,N=400,curve=[];
-    for(let i=0;i<=N;i++){const xx=a+(b-a)*i/N;const yy=f(xx);curve.push({x:xx,y:isFinite(yy)?yy:null});}
-    // 限制 y 范围避免爆炸
-    const finite=curve.filter(p=>p.y!==null).map(p=>p.y);
-    const ylo=Math.max(-50,Math.min(...finite)), yhi=Math.min(50,Math.max(...finite));
-    drawPlot('root_chart',{series:[
-      {points:curve.map(p=>({x:p.x,y:p.y===null?null:Math.max(ylo-10,Math.min(yhi+10,p.y))})),color:'#4f46e5',width:2},
-      {points:[{x:root,y:0}],color:'#dc2626',line:false,pointRadius:6}
-    ],yMin:ylo-10,yMax:yhi+10});
-    showMsg('root_msg','求根完成。','ok');
-  }catch(e){ showMsg('root_msg',e.message,'err'); }
-}
+    const ys=curve.filter(p=>p.y!=null).map(p=>p.y);
+    if(ys.length){
+      ymin=Math.min(0,...ys); ymax=Math.max(0,...ys);
+      const pad=(ymax-ymin)*0.1||1;
+      ymin-=pad; ymax+=pad;
+    }
+  }
 
-/* ============ 4. 积分 ============ */
-function runInteg(){
-  clearMsg('integ_msg');
-  try{
-    const f=compileExpr($('integ_f').value,['x']);
-    let a=parseFloat($('integ_a').value), b=parseFloat($('integ_b').value);
-    let n=parseInt($('integ_n').value);
-    if(isNaN(a)||isNaN(b)||isNaN(n)||n<1)throw new Error('请检查积分参数（n 为正整数）。');
-    if(b<a){const t=a;a=b;b=t;} // 交换使 a<b
-    let h=(b-a)/n, trap=0, simpN=n;
-    if(simpN%2===1)simpN+=1;
-    const hs=(b-a)/simpN;
-    // 梯形
-    trap=(f(a)+f(b))/2;
-    for(let i=1;i<n;i++)trap+=f(a+i*h);
-    trap*=h;
-    // 辛普森
-    let s=f(a)+f(b);
-    for(let i=1;i<simpN;i++)s+=(i%2?4:2)*f(a+i*hs);
-    const simp=s*hs/3;
-    $('integ_res').innerHTML=
-      '<div class="kv"><span class="k">积分区间</span><span class="v">['+fmt(a,6)+', '+fmt(b,6)+']</span></div>'+
-      '<div class="kv"><span class="k">划分份数 n</span><span class="v">'+n+(simpN!==n?'（辛普森用 '+simpN+'）':'')+'</span></div>'+
-      '<div class="kv"><span class="k">梯形公式</span><span class="v">'+fmt(trap,10)+'</span></div>'+
-      '<div class="kv"><span class="k" style="color:#4f46e5">辛普森公式</span><span class="v" style="color:#4f46e5;font-size:16px">'+fmt(simp,10)+'</span></div>';
-    const N=400,curve=[];
-    for(let i=0;i<=N;i++){const xx=a+(b-a)*i/N;curve.push({x:xx,y:f(xx)});}
-    drawPlot('integ_chart',{series:[{points:curve,color:'#4f46e5',width:2,fill:'rgba(79,70,229,0.15)',fillTo:'zero'}]});
-    showMsg('integ_msg','积分完成。','ok');
-  }catch(e){ showMsg('integ_msg',e.message,'err'); }
-}
+  let trap=null, simp=null;
+  if(G.fn){
+    try{ trap=trapz(G.fn,a,b,n); }catch(e){}
+    try{ simp=simpson(G.fn,a,b,n%2?n+1:n); }catch(e){}
+  }
 
-/* ============ 5. 微分方程 ============ */
-function runOde(){
-  clearMsg('ode_msg');
-  try{
-    const f=compileExpr($('ode_f').value,['x','y']);
-    const x0=parseFloat($('ode_x0').value), y0=parseFloat($('ode_y0').value);
-    const xe=parseFloat($('ode_xe').value), h=parseFloat($('ode_h').value);
-    if([x0,y0,xe,h].some(isNaN)||h<=0)throw new Error('请检查初值、终点与步长（h>0）。');
-    if(xe<=x0)throw new Error('终点 x 必须大于初值 x₀。');
-    const method=$('ode_method').value;
-    const steps=Math.min(100000,Math.ceil((xe-x0)/h));
-    let x=x0,y=y0;
-    const sol=[{x,y}];
-    for(let k=0;k<steps;k++){
-      if(method==='euler'){
-        y=y+h*f(x,y); x=x0+(k+1)*h;
+  const T=chart($('cInteg'),{series:[{pts:curve,color:'rgba(240,239,236,.85)',width:1.6}],
+    xMin:a,xMax:b,yMin:ymin,yMax:ymax,
+    overlay:(ctx,T)=>{
+      if(!G.fn)return;
+      const yz=T.Y(0);
+      if(G.method==='trap'){
+        const h=(b-a)/n;
+        for(let i=0;i<n;i++){
+          const x1=a+i*h, x2=a+(i+1)*h, f1=G.fn(x1), f2=G.fn(x2);
+          ctx.beginPath();
+          ctx.moveTo(T.X(x1),yz); ctx.lineTo(T.X(x1),T.Y(f1));
+          ctx.lineTo(T.X(x2),T.Y(f2)); ctx.lineTo(T.X(x2),yz); ctx.closePath();
+          ctx.fillStyle='rgba(240,239,236,.07)'; ctx.fill();
+          ctx.strokeStyle='rgba(240,239,236,.30)'; ctx.lineWidth=1; ctx.stroke();
+        }
       }else{
-        const k1=f(x,y);
-        const k2=f(x+h/2,y+h*k1/2);
-        const k3=f(x+h/2,y+h*k2/2);
-        const k4=f(x+h,y+h*k3);
-        y=y+(h/6)*(k1+2*k2+2*k3+k4);
-        x=x0+(k+1)*h;
+        for(let k=0;k<n;k+=2){
+          const x1=a+k*(b-a)/n, x2=a+(k+1)*(b-a)/n, x3=a+(k+2)*(b-a)/n;
+          const f1=G.fn(x1), f2=G.fn(x2), f3=G.fn(x3);
+          ctx.beginPath(); ctx.moveTo(T.X(x1),yz);
+          for(let s=0;s<=18;s++){
+            const t=s/18;
+            const xx=x1+(x3-x1)*t;
+            const yy=f1*((xx-x2)*(xx-x3))/((x1-x2)*(x1-x3))
+                    +f2*((xx-x1)*(xx-x3))/((x2-x1)*(x2-x3))
+                    +f3*((xx-x1)*(xx-x2))/((x3-x1)*(x3-x2));
+            ctx.lineTo(T.X(xx),T.Y(yy));
+          }
+          ctx.lineTo(T.X(x3),yz); ctx.closePath();
+          ctx.fillStyle='rgba(240,239,236,.07)'; ctx.fill();
+          ctx.strokeStyle='rgba(240,239,236,.26)'; ctx.lineWidth=1; ctx.stroke();
+        }
       }
-      if(!isFinite(y))throw new Error('数值发散，请减小步长 h。');
-      sol.push({x,y});
-    }
-    const last=sol[sol.length-1];
-    $('ode_res').innerHTML=
-      '<div class="kv"><span class="k">求解方法</span><span class="v">'+(method==='rk4'?'四阶龙格-库塔':'欧拉法')+'</span></div>'+
-      '<div class="kv"><span class="k">步数</span><span class="v">'+steps+'</span></div>'+
-      '<div class="kv"><span class="k">y('+fmt(xe,4)+') ≈</span><span class="v" style="color:#4f46e5;font-size:17px">'+fmt(last.y,10)+'</span></div>';
-    drawPlot('ode_chart',{series:[{points:sol,color:'#4f46e5',width:2},{points:[{x:x0,y:y0}],color:'#dc2626',line:false,pointRadius:5}]});
-    $('ode_table').innerHTML=tableHTML(['x','y'],sol.slice(0,20).map(p=>[fmt(p.x,6),fmt(p.y,8)]));
-    showMsg('ode_msg','求解完成。','ok');
-  }catch(e){ showMsg('ode_msg',e.message,'err'); }
+    }});
+  G.T=T;
+
+  const chosen=G.method==='trap'?trap:simp;
+  const other=G.method==='trap'?simp:trap;
+  $('gVal').textContent=chosen==null?'—':fmt(chosen,8);
+  $('gOtherK').textContent=G.method==='trap'?'辛普森 S(n)':'梯形 T(n)';
+  $('gOther').textContent=other==null?'—':fmt(other,8);
+  $('gDiff').textContent=(trap==null||simp==null)?'—':fmt(Math.abs(trap-simp),8);
+
+  if(G.err) status('sInteg',G.err,true);
+  else status('sInteg',G.method==='trap'?'梯形公式 · n = '+n:'辛普森公式 · n = '+n);
 }
 
-/* ============ 示例 &_tab ============ */
-const samples={
-  interp:'0 1\n1 3\n2 2\n3 4\n4 3',
-  fit:'0 0.9\n1 3.1\n2 5.0\n3 6.9\n4 9.2\n5 11.1',
-  integ:'sin(x)'
-};
-function fillSample(key){ if(samples[key])$(key+'_pts')?$(key+'_pts').value=samples[key]:$(key+'_f').value=samples[key]; }
+$('gF').addEventListener('input',e=>{ G.f=e.target.value; drawInteg(); });
+$('gA').addEventListener('input',e=>{ G.a=parseFloat(e.target.value); drawInteg(); });
+$('gB').addEventListener('input',e=>{ G.b=parseFloat(e.target.value); drawInteg(); });
+$('gN').addEventListener('input',e=>{
+  G.n=parseInt(e.target.value,10); $('gNVal').textContent=G.n; drawInteg();
+});
 
-// 初始化标签
+/* ============ 05 微分方程 ============ */
+const O={f:'x - y',x0:0,y0:1,xe:3,h:0.1,method:'rk4',fn:null,err:null,reveal:1,raf:null};
+
+function solveOde(method){
+  const f=O.fn, h=O.h;
+  const steps=Math.min(4000,Math.max(1,Math.ceil((O.xe-O.x0)/h)));
+  let x=O.x0, y=O.y0;
+  const out=[{x,y,broken:false}];
+  for(let k=0;k<steps;k++){
+    let ny;
+    if(method==='euler'){ ny=y+h*f(x,y); }
+    else{
+      const k1=f(x,y), k2=f(x+h/2,y+h*k1/2), k3=f(x+h/2,y+h*k2/2), k4=f(x+h,y+h*k3);
+      ny=y+h/6*(k1+2*k2+2*k3+k4);
+    }
+    x=O.x0+(k+1)*h;
+    if(!isFinite(ny)){ out.push({x,y:null,broken:true}); break; }
+    y=ny; out.push({x,y,broken:false});
+  }
+  return out;
+}
+
+function drawOde(){
+  try{ O.fn=compileExpr(O.f,['x','y']); O.err=null; }
+  catch(e){ O.fn=null; O.err=e.message; }
+
+  let rk=[], eu=[];
+  if(O.fn){
+    try{ rk=solveOde('rk4'); }catch(e){ O.err=e.message; }
+    try{ eu=solveOde('euler'); }catch(e){}
+  }
+
+  const prim=O.method==='rk4'?rk:eu, other=O.method==='rk4'?eu:rk;
+  const cut=Math.max(2,Math.ceil(prim.length*O.reveal));
+  const primPts=prim.slice(0,cut), otherPts=other.slice(0,Math.max(2,Math.ceil(other.length*O.reveal)));
+
+  const T=chart($('cOde'),{
+    series:[
+      {pts:otherPts,color:'rgba(240,239,236,.35)',width:1.2,dash:[4,4]},
+      {pts:primPts,color:INK,width:1.8},
+      {pts:primPts.filter(p=>p.y!=null).slice(0,1),type:'dots',r:3,color:INK},
+      {pts:primPts.filter(p=>p.y!=null).slice(-1),type:'dots',r:3.4,color:INK}
+    ],
+    overlay:(ctx,T)=>{
+      if(!primPts.length)return;
+      const last=primPts[primPts.length-1];
+      if(last.y==null)return;
+      const px=T.X(last.x), py=T.Y(last.y);
+      if(px>T.x0&&px<T.x0+T.pw&&py>T.y0&&py<T.y0+T.ph){
+        ctx.strokeStyle='rgba(240,239,236,.25)'; ctx.lineWidth=1; ctx.setLineDash([2,4]);
+        line(ctx,px,py,px,T.y0+T.ph); ctx.setLineDash([]);
+        ctx.font='9px '+MONO; ctx.fillStyle=DIM; ctx.textAlign='left'; ctx.textBaseline='bottom';
+        ctx.fillText('y='+fmt(last.y,3), px+5, py-4);
+      }
+    }});
+  O.T=T;
+
+  const end=arr=>arr.length?arr[arr.length-1].y:null;
+  const y1=end(rk), y2=end(eu);
+  const pv=O.method==='rk4'?y1:y2, ov=O.method==='rk4'?y2:y1;
+  $('oY').textContent=pv==null?'—':fmt(pv,8);
+  $('oY2').textContent=ov==null?'—':fmt(ov,8);
+  $('oDiff').textContent=(pv==null||ov==null)?'—':fmt(Math.abs(pv-ov),8);
+  $('oSteps').textContent=Math.max(0,prim.length-1);
+
+  if(O.err) status('sOde',O.err,true);
+  else status('sOde',O.method==='rk4'?'四阶龙格-库塔':'显式欧拉法');
+}
+
+$('oF').addEventListener('input',e=>{ O.f=e.target.value; O.reveal=1; drawOde(); });
+['oX0','oY0','oXe'].forEach(id=>$(id).addEventListener('input',()=>{
+  O.x0=parseFloat($('oX0').value); O.y0=parseFloat($('oY0').value); O.xe=parseFloat($('oXe').value);
+  O.reveal=1; drawOde();
+}));
+$('oH').addEventListener('input',e=>{
+  O.h=parseFloat(e.target.value); $('oHVal').textContent=O.h.toFixed(2); O.reveal=1; drawOde();
+});
+$('oPlay').addEventListener('click',function(){
+  if(O.raf){ cancelAnimationFrame(O.raf); O.raf=null; this.textContent='播放 →'; return; }
+  O.reveal=0; this.textContent='暂停';
+  const t0=performance.now(), dur=1500;
+  const step=t=>{
+    O.reveal=Math.min(1,(t-t0)/dur);
+    drawOde();
+    if(O.reveal<1){ O.raf=requestAnimationFrame(step); }
+    else{ O.raf=null; $('oPlay').textContent='重播 →'; }
+  };
+  O.raf=requestAnimationFrame(step);
+});
+
+/* ============ 初始化 ============ */
+drawInterp();
+drawFit();
+rootReset();
+drawInteg();
+drawOde();
+
+/* 导航高亮 */
 (function(){
-  const tabs=$('tabs'), panels=document.querySelectorAll('.panel');
-  const names={interp:'插值',fit:'拟合',root:'求根',integ:'积分',ode:'微分方程'};
-  Object.keys(names).forEach((key,i)=>{
-    const b=document.createElement('button');
-    b.className='tab'+(i===0?' active':'');b.textContent=names[key];
-    b.onclick=()=>{
-      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-      panels.forEach(p=>p.classList.remove('active'));
-      b.classList.add('active');
-      document.querySelector('.panel[data-panel="'+key+'"]').classList.add('active');
-      // 重绘当前面板图表（尺寸可能在隐藏时为 0）
-      const fn={interp:runInterp,fit:runFit,root:runRoot,integ:runInteg,ode:runOde}[key];
-      setTimeout(()=>{try{fn()}catch(e){}},0);
-    };
-    tabs.appendChild(b);
-  });
-  // 首次自动计算各面板，便于直接看到图表
-  [runFit,runRoot,runInteg,runOde].forEach(fn=>{try{fn()}catch(e){}});
+  const links=[...document.querySelectorAll('nav a[href^="#"]')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+      }
+    });
+  },{rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(s=>io.observe(s));
 })();
+
+/* 尺寸变化重绘 */
+let rz=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(rz);
+  rz=setTimeout(()=>{drawInterp();drawFit();drawRoot();drawInteg();drawOde();},150);
+});
 </script>
 </body>
 </html>

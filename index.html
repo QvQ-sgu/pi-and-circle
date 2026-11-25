@@ -3,278 +3,359 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>π 与圆 · 一个常数的两千年</title>
-<meta name="description" content="圆周率 π 的几何意义、割圆术、蒲丰投针与历史。可交互的数学科普单页。">
+<title>π · 圆周率标本 SPECIMEN 01</title>
+<meta name="description" content="圆周率 π 的几何意义、圆周展开、割圆术、蒲丰投针与计算史。可交互的数学标本页。">
 <style>
   :root{
-    --ink:#111111; --body:#1c1c1c; --muted:#6b6b6b; --faint:#9a9a9a;
-    --paper:#ffffff;
-    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STZhongsong",Georgia,serif;
-    --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+    --bg:#0a0a0a; --panel:#0e0e0e;
+    --ink:#f0efec; --body:#c6c5c1; --muted:#8a8984; --faint:#575652;
+    --line:rgba(240,239,236,.15); --line2:rgba(240,239,236,.07);
+    --sans:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--paper);color:var(--body);
-    font-family:var(--serif);font-size:17px;line-height:1.85;
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--body);
+    font-family:var(--sans);font-size:16px;line-height:1.85;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-  h1,h2,h3,h4{font-family:var(--serif);font-weight:700;color:var(--ink)}
+  ::selection{background:#f0efec;color:#0a0a0a}
+  h1,h2,h3,h4{color:var(--ink);font-weight:700;margin:0;letter-spacing:-.015em}
   p{margin:0}
-  a{color:inherit}
+  a{color:inherit;text-decoration:none}
 
-  /* 报头 */
-  .masthead{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.93);
-    backdrop-filter:blur(8px)}
-  .masthead .wrap{max-width:1120px;margin:0 auto;padding:15px 44px;
-    display:flex;align-items:baseline;justify-content:space-between;gap:20px}
-  .brand{font-size:15px;letter-spacing:.04em}
-  .brand em{font-style:normal;color:var(--faint);margin-left:8px;font-size:12px;
-    font-family:var(--mono);letter-spacing:.08em}
-  nav{display:flex;gap:22px;flex-wrap:wrap}
-  nav a{font-family:var(--sans);font-size:12px;color:var(--muted);text-decoration:none;
-    letter-spacing:.08em;transition:color .2s}
+  /* 顶部 */
+  .masthead{position:sticky;top:0;z-index:40;background:rgba(10,10,10,.86);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line2)}
+  .masthead .row{max-width:1240px;margin:0 auto;padding:0 40px;height:54px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);
+    font-size:11px;letter-spacing:.14em;color:var(--faint)}
+  .brand b{font-family:var(--sans);font-size:13.5px;letter-spacing:.06em;
+    font-weight:700;color:var(--ink)}
+  nav{display:flex;gap:26px}
+  nav a{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    color:var(--muted);transition:color .2s;position:relative;padding:3px 0}
   nav a:hover{color:var(--ink)}
-  @media(max-width:780px){nav{display:none}.masthead .wrap{padding:13px 22px}}
+  nav a.on{color:var(--ink)}
+  nav a.on::before{content:"";position:absolute;left:-9px;top:8px;width:4px;height:4px;
+    background:var(--ink)}
+  @media(max-width:820px){nav{display:none}.masthead .row{padding:0 22px}}
 
-  /* 首页 */
-  .hero{position:relative;overflow:hidden;padding:0 0 64px}
-  .hero .wrap{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:0 44px}
-  .hero-inner{padding-top:clamp(56px,16vh,150px)}
-  .eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.26em;
-    color:var(--muted);text-transform:uppercase}
-  h1{font-size:clamp(46px,7vw,92px);line-height:.98;margin:22px 0 0;letter-spacing:-.01em}
-  h1 span{display:block}
-  .standfirst{max-width:430px;margin-top:30px;font-size:17px;line-height:1.95;color:#3f3f3f}
-  .digits{margin-top:40px;max-width:560px;font-family:var(--mono);font-size:12.5px;
-    line-height:2.1;letter-spacing:.05em;color:#8a8a8a;word-break:break-all}
-  .pi-mark{position:absolute;right:-1.5vw;top:-3.2vw;z-index:1;pointer-events:none;
-    font-family:var(--serif);font-weight:700;font-size:47vw;line-height:.72;
-    color:#f1f0ee;user-select:none}
-  @supports((-webkit-text-stroke:1px #000)){
-    .pi-mark{color:transparent;-webkit-text-stroke:1.4px #111;opacity:.92}
-  }
-  @media(max-width:900px){.pi-mark{display:none}.hero{overflow:visible}}
+  /* 首屏 */
+  .hero{max-width:1240px;margin:0 auto;padding:58px 40px 0}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:start}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--faint);
+    text-transform:uppercase}
+  .pi-big{font-family:var(--mono);font-size:clamp(120px,17vw,236px);line-height:.76;
+    color:var(--ink);letter-spacing:-.06em;margin:22px 0 0;font-weight:400}
+  h1{font-size:clamp(28px,3.6vw,44px);line-height:1.22;margin:26px 0 0;letter-spacing:.01em}
+  .lead{margin-top:22px;max-width:420px;font-size:15px;line-height:1.95;color:var(--body)}
 
-  /* 章节骨架 */
-  main{max-width:1120px;margin:0 auto;padding:0 44px 40px}
-  .chapter{padding-top:84px}
-  .chapter-head{display:grid;grid-template-columns:96px minmax(0,1fr);gap:30px;
-    align-items:baseline}
-  .num{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--faint)}
-  h2{font-size:clamp(27px,3.1vw,36px);margin:0;line-height:1.3}
-  .chapter-body{display:grid;grid-template-columns:96px minmax(0,1fr);gap:30px;
-    margin-top:22px}
-  .chapter-body > *{grid-column:2;max-width:640px}
-  .lead{font-size:17.5px;color:#3a3a3a}
-  .note{font-family:var(--sans);font-size:13px;line-height:1.9;color:var(--muted);
-    margin-top:14px;max-width:600px}
+  .spec{position:relative;border:1px solid var(--line2);padding:6px 18px;
+    margin-top:6px;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent)}
+  .spec .cr{position:absolute;width:6px;height:6px;border:1px solid rgba(240,239,236,.5)}
+  .spec .cr.tl{left:-1px;top:-1px;border-right:0;border-bottom:0}
+  .spec .cr.tr{right:-1px;top:-1px;border-left:0;border-bottom:0}
+  .spec .cr.bl{left:-1px;bottom:-1px;border-right:0;border-top:0}
+  .spec .cr.br{right:-1px;bottom:-1px;border-left:0;border-top:0}
+  .srow{display:flex;justify-content:space-between;gap:14px;padding:10px 0;
+    border-bottom:1px solid var(--line2);font-family:var(--mono);font-size:10.5px}
+  .srow:last-child{border-bottom:0}
+  .srow .k{color:var(--faint);letter-spacing:.1em;white-space:nowrap}
+  .srow .v{color:var(--ink);text-align:right;word-break:break-all}
+  .spec-note{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--faint);
+    margin-top:12px;text-align:right;line-height:1.9}
 
-  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 46px;max-width:760px}
-  .cols2 h3{font-size:18px;margin:0 0 8px}
-  .cols2 p{font-size:16px;color:#4a4a4a;line-height:1.9}
-  @media(max-width:820px){
-    .chapter-head,.chapter-body{grid-template-columns:1fr;gap:10px}
-    .chapter-body > *{grid-column:1}
-    .cols2{grid-template-columns:1fr;gap:26px}
-  }
+  /* 数字带 */
+  .ticker{margin-top:56px;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);
+    overflow:hidden}
+  .ticker-track{display:flex;width:max-content;animation:tick 90s linear infinite}
+  .ticker-track span{font-family:var(--mono);font-size:11px;letter-spacing:.4em;
+    color:var(--faint);padding:11px 0;white-space:nowrap}
+  @keyframes tick{to{transform:translateX(-50%)}}
+  .ticker:hover .ticker-track{animation-play-state:paused}
 
-  /* 公式表 */
-  .formula-list{max-width:520px;margin-top:6px}
+  /* 章节 */
+  main{max-width:1240px;margin:0 auto;padding:0 40px}
+  .sec{padding-top:68px;margin-top:68px;border-top:1px solid var(--line2)}
+  .sec-head{display:grid;grid-template-columns:120px minmax(0,1fr);gap:30px;align-items:start}
+  .num{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--faint);
+    padding-top:9px}
+  .num b{display:block;font-weight:400;font-size:10.5px;color:var(--ink);margin-top:3px}
+  h2{font-size:clamp(23px,2.7vw,32px);line-height:1.3}
+  .sec-body{display:grid;grid-template-columns:120px minmax(0,1fr);gap:30px;margin-top:24px}
+  .sec-body > *{grid-column:2;max-width:700px}
+  .sec-body .wide{max-width:840px}
+
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 44px;max-width:740px;margin-top:26px}
+  .cols2 h3{font-size:15px;margin:0 0 7px;letter-spacing:.02em}
+  .cols2 h3 em{font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--faint);
+    margin-left:8px;letter-spacing:.14em}
+  .cols2 p{font-size:14.5px;color:#a9a8a4;line-height:1.95}
+
+  /* 公式 */
+  .formulas{margin-top:22px;max-width:520px}
   .frow{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;
-    padding:12px 0}
-  .frow .name{font-size:16px;color:#565656}
-  .frow .exp{font-size:19px;color:var(--ink);white-space:nowrap}
+    padding:11px 0;border-bottom:1px solid var(--line2)}
+  .frow:last-child{border-bottom:0}
+  .frow .n{font-size:14.5px;color:var(--muted)}
+  .frow .e{font-family:var(--mono);font-size:15px;color:var(--ink);white-space:nowrap}
 
-  /* 图与交互 */
-  figure{margin:0}
-  canvas{width:100%;height:380px;display:block}
-  figcaption{font-family:var(--sans);font-size:12.5px;color:#7d7d7d;
-    margin-top:10px;letter-spacing:.02em}
-  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:16px 30px;margin-top:20px}
-  .ctl{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);
-    font-size:12px;color:var(--muted);letter-spacing:.08em}
-  .ctl output{font-family:var(--mono);font-size:13px;color:var(--ink);min-width:2.4ch}
-  input[type=range]{-webkit-appearance:none;appearance:none;width:190px;height:2px;
-    background:#d8d6d2;outline:none}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
-    border-radius:50%;background:#111;cursor:pointer}
-  input[type=range]::-moz-range-thumb{width:13px;height:13px;border:0;border-radius:50%;
-    background:#111;cursor:pointer}
-  .stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:22px}
-  .stat .k{font-family:var(--sans);font-size:10.5px;letter-spacing:.16em;
-    color:var(--faint);text-transform:uppercase}
-  .stat .v{font-family:var(--mono);font-size:16px;color:var(--ink);margin-top:3px}
-  .txtbtn{background:none;border:0;padding:0;cursor:pointer;font-family:var(--sans);
-    font-size:12.5px;letter-spacing:.1em;color:var(--ink);text-transform:uppercase}
-  .txtbtn:hover{opacity:.55}
+  /* 图 */
+  figure{margin:24px 0 0;max-width:840px}
+  canvas{width:100%;display:block}
+  .fig-big{height:330px}
+  .fig-mid{height:290px}
+  figcaption{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:9px;
+    letter-spacing:.06em}
+
+  /* 控件 */
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px 30px;margin-top:18px}
+  .slide{display:inline-flex;align-items:center;gap:12px}
+  .ctl{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);
+    font-size:10px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+  .ctl output{font-size:12px;color:var(--ink);min-width:4ch;letter-spacing:0}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:180px;height:1px;
+    background:rgba(240,239,236,.28);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;
+    border-radius:50%;background:var(--ink);cursor:grab}
+  input[type=range]::-moz-range-thumb{width:9px;height:9px;border:0;border-radius:50%;
+    background:var(--ink);cursor:grab}
+  .btn{background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);
+    font-size:10px;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding-bottom:2px;transition:opacity .18s}
+  .btn:hover{opacity:.55}
+  .btn:disabled{opacity:.3;cursor:default}
+
+  /* 读数 */
+  .readout{display:flex;flex-wrap:wrap;gap:26px 54px;margin-top:22px}
+  .readout .k{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--faint);
+    text-transform:uppercase}
+  .readout .v{font-family:var(--mono);font-size:19px;color:var(--ink);margin-top:3px;
+    letter-spacing:-.02em}
+  .readout .v small{font-size:10px;color:var(--muted);letter-spacing:.06em}
+
+  .note{font-size:13px;line-height:1.95;color:var(--muted);margin-top:18px;max-width:640px}
+
+  /* 年表 */
+  .hist{margin-top:6px;max-width:760px}
+  .hrow{display:grid;grid-template-columns:140px minmax(0,1fr);gap:20px;
+    padding:14px 0;border-bottom:1px solid var(--line2);transition:background .2s}
+  .hrow:last-child{border-bottom:0}
+  .hrow:hover .yr{color:var(--ink)}
+  .hrow .yr{font-family:var(--mono);font-size:10.5px;color:var(--faint);padding-top:4px;
+    letter-spacing:.06em;transition:color .2s}
+  .hrow h4{font-size:15px;margin:0 0 2px;font-weight:700}
+  .hrow p{font-size:13.5px;color:#9b9a96;line-height:1.8}
 
   /* 应用 */
-  .apps{display:grid;grid-template-columns:1.55fr 1fr;gap:38px 58px;max-width:900px}
-  .apps h4{font-size:19px;margin:0 0 5px}
-  .apps p{font-size:15px;line-height:1.85;color:#5a5a5a}
+  .apps{display:grid;grid-template-columns:1.5fr 1fr;gap:34px 56px;max-width:880px;margin-top:24px}
+  .apps h4{font-size:16px;margin:0 0 5px}
+  .apps p{font-size:14px;line-height:1.85;color:#9b9a96}
   .apps .item:first-child{grid-row:span 2}
   .apps .item:last-child{grid-column:1/-1}
-  @media(max-width:820px){
+  .apps .idx{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.16em;
+    display:block;margin-bottom:6px}
+
+  footer{max-width:1240px;margin:88px auto 0;padding:26px 40px 50px;
+    border-top:1px solid var(--line2);font-family:var(--mono);font-size:10px;
+    letter-spacing:.1em;color:var(--faint);display:flex;flex-wrap:wrap;gap:10px 26px;
+    justify-content:space-between}
+  footer a{color:var(--ink)}
+
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:30px}
+    .spec{max-width:360px}
+  }
+  @media(max-width:760px){
+    .hero,.masthead .row,main,footer{padding-left:22px;padding-right:22px}
+    .hero{padding-top:40px}
+    .sec{padding-top:52px;margin-top:52px}
+    .sec-head,.sec-body{grid-template-columns:1fr;gap:8px}
+    .sec-body > *{grid-column:1}
+    .cols2{grid-template-columns:1fr;gap:24px}
     .apps{grid-template-columns:1fr;gap:26px}
     .apps .item:first-child{grid-row:auto}
     .apps .item:last-child{grid-column:auto}
-  }
-
-  /* 年表 */
-  .hist{max-width:740px;margin-top:4px}
-  .hrow{display:grid;grid-template-columns:130px minmax(0,1fr);gap:22px;padding:15px 0}
-  .hrow time{font-family:var(--mono);font-size:12px;letter-spacing:.03em;
-    color:var(--faint);padding-top:4px}
-  .hrow h4{font-size:17px;margin:0 0 3px}
-  .hrow p{font-size:15px;color:#5c5c5c;line-height:1.85}
-  @media(max-width:620px){
     .hrow{grid-template-columns:1fr;gap:2px}
-    .hrow time{padding-top:0}
+    .hrow .yr{padding-top:0}
+    .fig-big,.fig-mid{height:260px}
+    .readout{gap:18px 32px}
   }
-
-  footer{max-width:1120px;margin:0 auto;padding:70px 44px 54px;
-    font-family:var(--sans);font-size:12.5px;color:var(--muted);letter-spacing:.03em}
-  footer a{text-decoration:none;color:var(--ink)}
-  footer .end{font-family:var(--serif);font-size:14px;color:var(--ink);margin-bottom:10px}
-  @media(max-width:780px){main,footer,.hero .wrap{padding-left:22px;padding-right:22px}}
 </style>
 </head>
 <body>
 
 <div class="masthead">
-  <div class="wrap">
-    <div class="brand">π 与圆<em>2019—</em></div>
+  <div class="row">
+    <div class="brand"><b>π 圆周率</b><span>SPECIMEN / 01</span></div>
     <nav>
-      <a href="#define">定义</a>
-      <a href="#formula">公式</a>
-      <a href="#archimedes">割圆术</a>
-      <a href="#buffon">蒲丰投针</a>
-      <a href="#history">年表</a>
+      <a href="#define">01 定义</a>
+      <a href="#formula">02 公式</a>
+      <a href="#archimedes">03 割圆</a>
+      <a href="#buffon">04 投针</a>
+      <a href="#history">05 年表</a>
       <a href="toolbox.html">工具箱</a>
     </nav>
   </div>
 </div>
 
 <header class="hero">
-  <div class="pi-mark" aria-hidden="true">π</div>
-  <div class="wrap">
-    <div class="hero-inner">
-      <p class="eyebrow">A constant · 圆周率</p>
-      <h1><span>一个常数，</span><span>两千年</span></h1>
-      <p class="standfirst">圆周率是圆的周长与直径之比。它不因圆的大小而改变，却让无数人为之计算一生。</p>
-      <p class="digits" id="digitsBox"></p>
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow">A constant · specimen sheet</p>
+      <p class="pi-big">π</p>
+      <h1>一个常数，两千年</h1>
+      <p class="lead">圆周率是圆的周长与直径之比。它不因圆的大小而改变，却让无数人为之计算一生。</p>
+    </div>
+    <div class="spec">
+      <span class="cr tl"></span><span class="cr tr"></span>
+      <span class="cr bl"></span><span class="cr br"></span>
+      <div class="srow"><span class="k">VALUE</span><span class="v">3.1415926535…</span></div>
+      <div class="srow"><span class="k">RATIO</span><span class="v">C / d</span></div>
+      <div class="srow"><span class="k">TYPE</span><span class="v">无理 · 超越</span></div>
+      <div class="srow"><span class="k">FIRST ACC.</span><span class="v">480 年 · 3.1415926</span></div>
+      <div class="srow"><span class="k">KNOWN</span><span class="v">10¹⁴ 位</span></div>
+      <p class="spec-note">SPECIMEN SHEET · 图形由 Canvas 实时绘制</p>
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span id="tk1"></span><span id="tk2"></span>
     </div>
   </div>
 </header>
 
 <main>
 
-  <section id="define" class="chapter">
-    <div class="chapter-head"><span class="num">01</span><h2>圆与 π 的定义</h2></div>
-    <div class="chapter-body">
-      <p class="lead">把一枚硬币滚一圈，量出走过的长度，再除以它的直径——无论硬币多大，答案都接近同一个数。</p>
-      <div class="cols2" style="margin-top:26px">
+  <section id="define" class="sec">
+    <div class="sec-head"><div class="num">01<b>定义</b></div><h2>圆与 π</h2></div>
+    <div class="sec-body">
+      <p>把一枚硬币在直尺上滚一圈，量出它走过的长度，再除以它的直径——无论硬币多大，答案都接近同一个数。</p>
+      <div class="cols2">
         <div>
-          <h3>几何定义</h3>
+          <h3>几何定义<em>DEFINITION</em></h3>
           <p>平面上到定点（圆心）距离等于定长（半径 r）的所有点构成圆。圆周长 C 与直径 d 的比值恒为常数，记作 π：π = C / d = C / 2r ≈ 3.1415926535…</p>
         </div>
         <div>
-          <h3>它是什么数</h3>
+          <h3>它是什么数<em>NATURE</em></h3>
           <p>π 是无理数：不能写成两个整数之比，小数不循环、不终止。1882 年林德曼证明它还是超越数——不是任何整系数多项式方程的根。这直接宣告「化圆为方」不可能用尺规完成。</p>
         </div>
       </div>
+
+      <figure>
+        <canvas id="rollCanvas" class="fig-mid" aria-label="圆滚动一周，其周长展开为一条直线"></canvas>
+        <figcaption>图 1　圆滚动一周，接触点走过 2πr；弧线标明已经「摊平」的圆周</figcaption>
+      </figure>
+      <div class="controls">
+        <div class="slide">
+          <label class="ctl" for="rollSlider">转角 θ <output id="rollTheta">0.00π</output></label>
+          <input type="range" id="rollSlider" min="0" max="6.2832" step="0.0016" value="0">
+        </div>
+        <button class="btn" id="rollBtn">转一圈 →</button>
+        <button class="btn" id="rollReset">归零</button>
+      </div>
+      <div class="readout">
+        <div><div class="k">S 已滚距离</div><div class="v" id="rollS">0.000<small> r</small></div></div>
+        <div><div class="k">C 圆周长</div><div class="v">6.283<small> r</small></div></div>
+        <div><div class="k">S / C</div><div class="v" id="rollRatio">0.000</div></div>
+      </div>
+      <p class="note">拖动滑杆，可以看到圆周上的弧被一点点「摊」到直线上。这正是 π 的定义：走满一整圈，直线长度等于 2πr。</p>
     </div>
   </section>
 
-  <section id="formula" class="chapter">
-    <div class="chapter-head"><span class="num">02</span><h2>圆的基本公式</h2></div>
-    <div class="chapter-body">
-      <p class="lead">以下公式全部由 π 串联。设圆的半径为 r，圆心角为 θ（弧度制）。</p>
-      <div class="formula-list">
-        <div class="frow"><span class="name">圆周长</span><span class="exp">C = 2πr</span></div>
-        <div class="frow"><span class="name">圆面积</span><span class="exp">S = πr²</span></div>
-        <div class="frow"><span class="name">弧长</span><span class="exp">l = rθ</span></div>
-        <div class="frow"><span class="name">扇形面积</span><span class="exp">S = ½r²θ = ½rl</span></div>
-        <div class="frow"><span class="name">球体积</span><span class="exp">V = 4/3 πr³</span></div>
-        <div class="frow"><span class="name">球表面积</span><span class="exp">A = 4πr²</span></div>
-        <div class="frow"><span class="name">椭圆面积</span><span class="exp">S = πab</span></div>
+  <section id="formula" class="sec">
+    <div class="sec-head"><div class="num">02<b>公式</b></div><h2>圆的基本公式</h2></div>
+    <div class="sec-body">
+      <p>以下公式全部由 π 串联。设圆的半径为 r，圆心角为 θ（弧度制）。</p>
+      <div class="formulas">
+        <div class="frow"><span class="n">圆周长</span><span class="e">C = 2πr</span></div>
+        <div class="frow"><span class="n">圆面积</span><span class="e">S = πr²</span></div>
+        <div class="frow"><span class="n">弧长</span><span class="e">l = rθ</span></div>
+        <div class="frow"><span class="n">扇形面积</span><span class="e">S = ½r²θ = ½rl</span></div>
+        <div class="frow"><span class="n">球体积</span><span class="e">V = 4/3 πr³</span></div>
+        <div class="frow"><span class="n">球表面积</span><span class="e">A = 4πr²</span></div>
+        <div class="frow"><span class="n">椭圆面积</span><span class="e">S = πab</span></div>
       </div>
       <p class="note">阿基米德用穷竭法证明圆面积等于直角边为 r 与 C 的直角三角形面积，即 ½·r·2πr = πr²，这是最早的积分思想之一。</p>
     </div>
   </section>
 
-  <section id="archimedes" class="chapter">
-    <div class="chapter-head"><span class="num">03</span><h2>割圆术</h2></div>
-    <div class="chapter-body">
-      <p class="lead">刘徽与阿基米德各自想到同一件事：在圆内接正多边形，边数越多，周长越接近圆周长，π 的估计就越准。</p>
-      <figure style="margin-top:26px">
-        <canvas id="polyCanvas" aria-label="正多边形逼近圆的可视化"></canvas>
-        <figcaption>图 1　内接（实线）与外切（细线）正 n 边形把圆夹在中间</figcaption>
+  <section id="archimedes" class="sec">
+    <div class="sec-head"><div class="num">03<b>割圆</b></div><h2>割圆术</h2></div>
+    <div class="sec-body">
+      <p>刘徽与阿基米德各自想到同一件事：在圆内接正多边形，边数越多，周长越接近圆周长，π 的估计就越准。</p>
+      <figure>
+        <canvas id="polyCanvas" class="fig-big" aria-label="正多边形逼近圆的可视化"></canvas>
+        <figcaption>图 2　内接（实线）与外切（细线）正 n 边形把圆夹在中间</figcaption>
       </figure>
       <div class="controls">
-        <label class="ctl" for="nSlider">边数 n <output id="nVal">6</output></label>
-        <input type="range" id="nSlider" min="3" max="96" step="1" value="6">
-        <button class="txtbtn" id="animateBtn">自动增加 →</button>
+        <div class="slide">
+          <label class="ctl" for="nSlider">边数 n <output id="nVal">6</output></label>
+          <input type="range" id="nSlider" min="3" max="96" step="1" value="6">
+        </div>
+        <button class="btn" id="animateBtn">自动增加 →</button>
       </div>
-      <div class="stats">
-        <div class="stat"><div class="k">内接下界</div><div class="v" id="lower">3.000000</div></div>
-        <div class="stat"><div class="k">外切上界</div><div class="v" id="upper">3.464102</div></div>
-        <div class="stat"><div class="k">区间宽度</div><div class="v" id="gap">0.464102</div></div>
-        <div class="stat"><div class="k">真实 π</div><div class="v">3.141593</div></div>
+      <div class="readout">
+        <div><div class="k">内接下界</div><div class="v" id="lower">3.000000</div></div>
+        <div><div class="k">外切上界</div><div class="v" id="upper">3.464102</div></div>
+        <div><div class="k">区间宽度</div><div class="v" id="gap">0.464102</div></div>
+        <div><div class="k">真实 π</div><div class="v">3.141593</div></div>
       </div>
       <p class="note">下界 n·sin(π/n)，上界 n·tan(π/n)。当 n 增大，两界向 π 收拢。刘徽用 3072 边形得到 3.1416；祖冲之精确到 3.1415926 &lt; π &lt; 3.1415927。</p>
     </div>
   </section>
 
-  <section id="buffon" class="chapter">
-    <div class="chapter-head"><span class="num">04</span><h2>蒲丰投针</h2></div>
-    <div class="chapter-body">
-      <p class="lead">1777 年，蒲丰提出：向画有等距平行线的平面随机投针，针与线相交的概率竟与 π 有关。于是抛针也能估 π。</p>
-      <figure style="margin-top:26px">
-        <canvas id="buffonCanvas" aria-label="蒲丰投针模拟"></canvas>
-        <figcaption>图 2　线间距 d = 1，针长 L = 0.8d；深色为与线相交者</figcaption>
+  <section id="buffon" class="sec">
+    <div class="sec-head"><div class="num">04<b>投针</b></div><h2>蒲丰投针</h2></div>
+    <div class="sec-body">
+      <p>1777 年，蒲丰提出：向画有等距平行线的平面随机投针，针与线相交的概率竟与 π 有关。于是抛针也能估 π。</p>
+      <figure>
+        <canvas id="buffonCanvas" class="fig-big" aria-label="蒲丰投针模拟，可点击投针"></canvas>
+        <figcaption>图 3　线间距 d = 1，针长 L = 0.8d；亮色为与线相交者 · 画布内点击即可投一根</figcaption>
       </figure>
       <div class="controls">
-        <button class="txtbtn" id="dropBtn">投 1000 根针 →</button>
-        <button class="txtbtn" id="resetBtn">清零</button>
+        <button class="btn" id="dropBtn">投 1000 根 →</button>
+        <button class="btn" id="resetBtn">清零</button>
+        <span class="ctl">点击画布 · 手投</span>
       </div>
-      <div class="stats">
-        <div class="stat"><div class="k">投针总数 N</div><div class="v" id="bN">0</div></div>
-        <div class="stat"><div class="k">相交数 H</div><div class="v" id="bH">0</div></div>
-        <div class="stat"><div class="k">π 估计值</div><div class="v" id="bPi">—</div></div>
-        <div class="stat"><div class="k">理论概率</div><div class="v">2L/πd</div></div>
+      <div class="readout">
+        <div><div class="k">投针总数 N</div><div class="v" id="bN">0</div></div>
+        <div><div class="k">相交数 H</div><div class="v" id="bH">0</div></div>
+        <div><div class="k">π 估计值</div><div class="v" id="bPi">—</div></div>
+        <div><div class="k">相对误差</div><div class="v" id="bErr">—</div></div>
       </div>
-      <p class="note">估计公式 π ≈ 2LN / (dH)。当 L = 0.8d 时理论概率约 0.509，故 π ≈ 2·0.8 / 0.509 ≈ 3.14。</p>
+      <p class="note">估计公式 π ≈ 2LN / (dH)。当 L = 0.8d 时理论概率约 0.509，故 π ≈ 2·0.8 / 0.509 ≈ 3.14。手投几十根通常偏差很大，正是随机估计的样子。</p>
     </div>
   </section>
 
-  <section id="history" class="chapter">
-    <div class="chapter-head"><span class="num">05</span><h2>计算 π 的简史</h2></div>
-    <div class="chapter-body">
+  <section id="history" class="sec">
+    <div class="sec-head"><div class="num">05<b>年表</b></div><h2>计算 π 的简史</h2></div>
+    <div class="sec-body">
       <div class="hist">
-        <div class="hrow"><time>约前 1650</time><div><h4>莱因德纸草书</h4><p>古埃及人用 (16/9)² ≈ 3.1605 作为圆面积计算的常数。</p></div></div>
-        <div class="hrow"><time>约前 250</time><div><h4>阿基米德</h4><p>用 96 边形夹逼，得 3.1408 &lt; π &lt; 3.1429。</p></div></div>
-        <div class="hrow"><time>263</time><div><h4>刘徽 · 割圆术</h4><p>提出「割之弥细，所失弥少」，以 3072 边形得 3.1416。</p></div></div>
-        <div class="hrow"><time>480</time><div><h4>祖冲之</h4><p>给出 3.1415926 &lt; π &lt; 3.1415927，并提出密率 355/113。</p></div></div>
-        <div class="hrow"><time>1671</time><div><h4>格雷果里－莱布尼茨级数</h4><p>π/4 = 1 − 1/3 + 1/5 − 1/7 + …，π 首次与无穷级数相连。</p></div></div>
-        <div class="hrow"><time>1706</time><div><h4>梅钦公式</h4><p>π/4 = 4·arctan(1/5) − arctan(1/239)，把 π 算到 100 位。</p></div></div>
-        <div class="hrow"><time>1882</time><div><h4>林德曼</h4><p>证明 π 是超越数，化圆为方被判定为尺规不可能。</p></div></div>
-        <div class="hrow"><time>2019 至今</time><div><h4>超级计算机</h4><p>Google 与瑞士团队先后把 π 算到 31.4 万亿、62.8 万亿、100 万亿位。</p></div></div>
+        <div class="hrow"><div class="yr">约前 1650</div><div><h4>莱因德纸草书</h4><p>古埃及人用 (16/9)² ≈ 3.1605 作为圆面积计算的常数。</p></div></div>
+        <div class="hrow"><div class="yr">约前 250</div><div><h4>阿基米德</h4><p>用 96 边形夹逼，得 3.1408 &lt; π &lt; 3.1429。</p></div></div>
+        <div class="hrow"><div class="yr">263</div><div><h4>刘徽 · 割圆术</h4><p>提出「割之弥细，所失弥少」，以 3072 边形得 3.1416。</p></div></div>
+        <div class="hrow"><div class="yr">480</div><div><h4>祖冲之</h4><p>给出 3.1415926 &lt; π &lt; 3.1415927，并提出密率 355/113。</p></div></div>
+        <div class="hrow"><div class="yr">1671</div><div><h4>格雷果里－莱布尼茨级数</h4><p>π/4 = 1 − 1/3 + 1/5 − 1/7 + …，π 首次与无穷级数相连。</p></div></div>
+        <div class="hrow"><div class="yr">1706</div><div><h4>梅钦公式</h4><p>π/4 = 4·arctan(1/5) − arctan(1/239)，把 π 算到 100 位。</p></div></div>
+        <div class="hrow"><div class="yr">1882</div><div><h4>林德曼</h4><p>证明 π 是超越数，化圆为方被判定为尺规不可能。</p></div></div>
+        <div class="hrow"><div class="yr">2019 至今</div><div><h4>超级计算机</h4><p>Google 与瑞士团队先后把 π 算到 31.4 万亿、62.8 万亿、100 万亿位。</p></div></div>
       </div>
     </div>
   </section>
 
-  <section class="chapter">
-    <div class="chapter-head"><span class="num">06</span><h2>π 出现在哪里</h2></div>
-    <div class="chapter-body">
-      <p class="lead">π 远不止用于量圆。它藏身于概率、波动、信号与宇宙的方程里。</p>
-      <div class="apps" style="margin-top:26px">
-        <div class="item"><h4>工程与制造</h4><p>齿轮、管道、轮胎、卫星轨道的尺寸计算都离不开 π。从一枚螺栓的牙距，到一条环形轨道的周长，π 决定了零件能否严丝合缝。</p></div>
-        <div class="item"><h4>信号与通信</h4><p>傅里叶变换中的角频率 2πf，是音频、5G 与图像压缩的基础。</p></div>
-        <div class="item"><h4>概率统计</h4><p>正态分布的密度函数含 √(2π)，中心极限定理因此处处可见 π。</p></div>
-        <div class="item"><h4>物理波动</h4><p>单摆周期 T = 2π√(L/g)，电磁波与量子波函数同样含 π。</p></div>
-        <div class="item"><h4>数论与算法</h4><p>π 的小数位被用作随机数检验、哈希测试与算力基准。</p></div>
-        <div class="item"><h4>天文与宇宙</h4><p>开普勒定律、引力波波形、宇宙学参数中都出现 π。</p></div>
+  <section class="sec">
+    <div class="sec-head"><div class="num">06<b>应用</b></div><h2>π 出现在哪里</h2></div>
+    <div class="sec-body">
+      <p>π 远不止用于量圆。它藏身于概率、波动、信号与宇宙的方程里。</p>
+      <div class="apps">
+        <div class="item"><span class="idx">01</span><h4>工程与制造</h4><p>齿轮、管道、轮胎、卫星轨道的尺寸计算都离不开 π。从一枚螺栓的牙距，到一条环形轨道的周长，π 决定了零件能否严丝合缝。</p></div>
+        <div class="item"><span class="idx">02</span><h4>信号与通信</h4><p>傅里叶变换中的角频率 2πf，是音频、5G 与图像压缩的基础。</p></div>
+        <div class="item"><span class="idx">03</span><h4>概率统计</h4><p>正态分布的密度函数含 √(2π)，中心极限定理因此处处可见 π。</p></div>
+        <div class="item"><span class="idx">04</span><h4>物理波动</h4><p>单摆周期 T = 2π√(L/g)，电磁波与量子波函数同样含 π。</p></div>
+        <div class="item"><span class="idx">05</span><h4>数论与算法</h4><p>π 的小数位被用作随机数检验、哈希测试与算力基准。</p></div>
+        <div class="item"><span class="idx">06</span><h4>天文与宇宙</h4><p>开普勒定律、引力波波形、宇宙学参数中都出现 π。</p></div>
       </div>
     </div>
   </section>
@@ -282,47 +363,190 @@
 </main>
 
 <footer>
-  <div class="end">π 与圆 · 一个常数的两千年</div>
-  静态页面，全部计算在浏览器内完成 · <a href="toolbox.html">数值计算工具箱 →</a>
+  <span>π 圆周率 · 一个常数的两千年</span>
+  <span>全部计算在浏览器内完成 · <a href="toolbox.html">数值计算工具箱 →</a></span>
 </footer>
 
 <script>
-/* 数字滚动展示 */
-(function(){
-  const s="3.14159265358979323846264338327950288419716939937510"+
-          "58209749445923078164062862089986280348253421170679";
-  const box=document.getElementById('digitsBox');
-  let i=0;
-  (function step(){
-    if(i>s.length) return;
-    box.textContent='π = '+s.slice(0,i);
-    i++; setTimeout(step,20);
-  })();
-})();
+/* ---------- 基础 ---------- */
+const MONO='"SFMono-Regular",Consolas,monospace';
+const INK='#f0efec';
+const DIM='rgba(240,239,236,.40)';
+const HAIR='rgba(240,239,236,.16)';
+const GRID='rgba(240,239,236,.055)';
 
-/* 画布准备 */
-function setupCanvas(cv){
+function setup(cv){
   const dpr=window.devicePixelRatio||1;
-  const w=cv.clientWidth||600, h=cv.clientHeight||380;
-  cv.width=w*dpr; cv.height=h*dpr;
+  const w=cv.clientWidth||640, h=cv.clientHeight||300;
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
   const ctx=cv.getContext('2d');
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,w,h);
   return {ctx,w,h};
 }
+function line(ctx,x1,y1,x2,y2){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+function dot(ctx,x,y,r,c){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();}
 
-/* 割圆术 */
+/* 数字带 */
+(function(){
+  const d="3.14159265358979323846264338327950288419716939937510"+
+          "58209749445923078164062862089986280348253421170679"+
+          "82148086513282306647093844609550582231725359408128"+
+          "48111745028410270193852110555964462294895493038196";
+  const txt="π = "+d+"   ";
+  document.getElementById('tk1').textContent=txt;
+  document.getElementById('tk2').textContent=txt;
+})();
+
+/* 导航高亮 */
+(function(){
+  const links=[...document.querySelectorAll('nav a[href^="#"]')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#'+e.target.id));
+      }
+    });
+  },{rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(s=>io.observe(s));
+})();
+
+/* ---------- 图 1：圆滚动 ---------- */
+(function(){
+  const cv=document.getElementById('rollCanvas');
+  const sl=document.getElementById('rollSlider');
+  const outT=document.getElementById('rollTheta');
+  const outS=document.getElementById('rollS');
+  const outR=document.getElementById('rollRatio');
+  const btn=document.getElementById('rollBtn');
+  const reset=document.getElementById('rollReset');
+  let theta=0, raf=null;
+
+  function draw(){
+    const {ctx,w,h}=setup(cv);
+    const R=Math.min((w-80)/(2*Math.PI+1.6), h*0.29);
+    const baseY=h*0.85;
+    const x0=26+R;
+    const PI=Math.PI;
+
+    /* 周长参照条 */
+    ctx.setLineDash([4,5]);
+    ctx.strokeStyle='rgba(240,239,236,.22)'; ctx.lineWidth=1;
+    line(ctx,x0,20,x0+R*2*PI,20);
+    ctx.setLineDash([]);
+    line(ctx,x0,15,x0,25); line(ctx,x0+R*2*PI,15,x0+R*2*PI,25);
+    ctx.font='9.5px '+MONO; ctx.fillStyle='rgba(240,239,236,.34)';
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText('C = 2πr', x0+R*PI, 16);
+
+    /* 基线 */
+    ctx.strokeStyle=HAIR; ctx.lineWidth=1;
+    line(ctx,0,baseY,w,baseY);
+
+    /* 刻度 0 → 2π */
+    ctx.font='9.5px '+MONO; ctx.textAlign='center'; ctx.textBaseline='top';
+    for(let i=0;i<=4;i++){
+      const x=x0+R*PI*i/2;
+      ctx.strokeStyle='rgba(240,239,236,.22)';
+      line(ctx,x,baseY,x,baseY+5);
+      ctx.fillStyle=DIM;
+      const lab=['0','π/2','π','3π/2','2π'][i];
+      ctx.fillText(lab,x,baseY+9);
+    }
+
+    /* 已滚长度 */
+    if(theta>0.001){
+      ctx.strokeStyle=INK; ctx.lineWidth=2.5;
+      line(ctx,x0,baseY-1,x0+R*theta,baseY-1);
+      ctx.lineWidth=1;
+      line(ctx,x0+R*theta,baseY-9,x0+R*theta,baseY+4);
+    }
+
+    const cx=x0+R*theta, cy=baseY-R;
+
+    /* 圆周 */
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,PI*2);
+    ctx.strokeStyle='rgba(240,239,236,.32)'; ctx.lineWidth=1.2; ctx.stroke();
+
+    /* 已摊平的弧 */
+    if(theta>0.002){
+      ctx.beginPath(); ctx.arc(cx,cy,R,PI/2,PI/2+theta);
+      ctx.strokeStyle=INK; ctx.lineWidth=2.6; ctx.stroke();
+    }
+
+    /* 半径 */
+    const a=PI/2+theta;
+    ctx.strokeStyle='rgba(240,239,236,.3)'; ctx.lineWidth=1;
+    line(ctx,cx,cy,cx+R*Math.cos(a),cy+R*Math.sin(a));
+
+    /* 竖直虚线 + 接触点 */
+    ctx.setLineDash([3,4]); ctx.strokeStyle='rgba(240,239,236,.2)';
+    line(ctx,cx,cy,cx,baseY); ctx.setLineDash([]);
+    dot(ctx,cx,baseY,2.4,INK);
+    dot(ctx,cx,cy,2,INK);
+
+    /* 圆心标注 */
+    ctx.fillStyle=DIM; ctx.font='9.5px '+MONO; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText('r', cx+6, cy-R*0.55);
+  }
+
+  function sync(){
+    outT.textContent=(theta/Math.PI).toFixed(2)+'π';
+    outS.innerHTML=(theta).toFixed(3)+'<small> r</small>';
+    outR.textContent=(theta/(2*Math.PI)).toFixed(3);
+    sl.value=theta;
+  }
+
+  function render(){ draw(); sync(); }
+
+  sl.addEventListener('input',()=>{
+    if(raf){cancelAnimationFrame(raf);raf=null;btn.textContent='转一圈 →';}
+    theta=parseFloat(sl.value); render();
+  });
+
+  btn.addEventListener('click',()=>{
+    if(raf){cancelAnimationFrame(raf);raf=null;btn.textContent='继续 →';return;}
+    const from=theta>=6.2831?0:theta, t0=performance.now(), dur=1700*((6.2832-from)/6.2832);
+    btn.textContent='暂停';
+    const step=t=>{
+      const k=Math.min(1,(t-t0)/Math.max(120,dur));
+      const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      theta=from+(6.2832-from)*e;
+      render();
+      if(k<1){raf=requestAnimationFrame(step);}
+      else{raf=null;theta=6.2832;render();btn.textContent='再来一次 →';}
+    };
+    raf=requestAnimationFrame(step);
+  });
+
+  reset.addEventListener('click',()=>{
+    if(raf){cancelAnimationFrame(raf);raf=null;}
+    theta=0; btn.textContent='转一圈 →'; render();
+  });
+
+  render();
+  window.addEventListener('resize',()=>{clearTimeout(window.__rt);window.__rt=setTimeout(render,120);});
+})();
+
+/* ---------- 图 2：割圆术 ---------- */
 const polyCv=document.getElementById('polyCanvas');
 const nSlider=document.getElementById('nSlider');
 let polyAnim=null;
 
 function drawPolygon(n){
-  const {ctx,w,h}=setupCanvas(polyCv);
-  const cx=w/2, cy=h/2, R=Math.min(w,h)*0.34;
+  const {ctx,w,h}=setup(polyCv);
+  const cx=w/2, cy=h/2, R=Math.min((w-150)/2, h*0.40);
 
+  /* 网格十字 */
+  ctx.strokeStyle=GRID; ctx.lineWidth=1;
+  line(ctx,cx,8,cx,h-8); line(ctx,10,cy,w-10,cy);
+
+  /* 圆 */
   ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-  ctx.strokeStyle='#d3d1cd'; ctx.lineWidth=1; ctx.stroke();
+  ctx.strokeStyle='rgba(240,239,236,.28)'; ctx.lineWidth=1; ctx.stroke();
 
+  /* 外切 */
   const rout=R/Math.cos(Math.PI/n);
   ctx.beginPath();
   for(let i=0;i<n;i++){
@@ -331,8 +555,9 @@ function drawPolygon(n){
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.closePath();
-  ctx.strokeStyle='rgba(17,17,17,.28)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.strokeStyle='rgba(240,239,236,.3)'; ctx.lineWidth=.9; ctx.stroke();
 
+  /* 内接 */
   ctx.beginPath();
   for(let i=0;i<n;i++){
     const a=-Math.PI/2+i*2*Math.PI/n;
@@ -340,12 +565,29 @@ function drawPolygon(n){
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.closePath();
-  ctx.fillStyle='rgba(17,17,17,.05)'; ctx.fill();
-  ctx.strokeStyle='#111111'; ctx.lineWidth=1.8; ctx.stroke();
+  ctx.fillStyle='rgba(240,239,236,.06)'; ctx.fill();
+  ctx.strokeStyle=INK; ctx.lineWidth=1.6; ctx.stroke();
 
-  ctx.beginPath(); ctx.arc(cx,cy,2.6,0,Math.PI*2); ctx.fillStyle='#111'; ctx.fill();
-  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R,cy);
-  ctx.strokeStyle='rgba(17,17,17,.25)'; ctx.setLineDash([4,4]); ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]);
+  /* 半径 */
+  ctx.setLineDash([3,4]); ctx.strokeStyle='rgba(240,239,236,.22)'; ctx.lineWidth=1;
+  line(ctx,cx,cy,cx+R,cy); ctx.setLineDash([]);
+  dot(ctx,cx,cy,2.2,INK);
+
+  /* 右侧刻度尺：n 的对数位置 */
+  const barX=w-38, top=32, bot=h-32;
+  ctx.strokeStyle='rgba(240,239,236,.18)';
+  line(ctx,barX,top,barX,bot);
+  for(let k=3;k<=96;k++){
+    if(k!==3&&k!==6&&k!==12&&k!==24&&k!==48&&k!==96) continue;
+    const t=(Math.log(k)-Math.log(3))/(Math.log(96)-Math.log(3));
+    const y=bot-t*(bot-top);
+    line(ctx,barX-4,y,barX,y);
+    ctx.fillStyle='rgba(240,239,236,.30)'; ctx.font='9px '+MONO;
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText(k,barX+5,y);
+  }
+  const nt=(Math.log(n)-Math.log(3))/(Math.log(96)-Math.log(3));
+  dot(ctx,barX,bot-nt*(bot-top),3,INK);
 
   const lower=n*Math.sin(Math.PI/n);
   const upper=n*Math.tan(Math.PI/n);
@@ -356,74 +598,110 @@ function drawPolygon(n){
 }
 
 nSlider.addEventListener('input',e=>{
-  if(polyAnim){cancelAnimationFrame(polyAnim);polyAnim=null;}
+  if(polyAnim){cancelAnimationFrame(polyAnim);polyAnim=null;
+    document.getElementById('animateBtn').textContent='自动增加 →';}
   drawPolygon(parseInt(e.target.value,10));
 });
 
 document.getElementById('animateBtn').addEventListener('click',function(){
   const btn=this;
-  if(polyAnim){cancelAnimationFrame(polyAnim);polyAnim=null;btn.textContent='自动增加 →';return;}
+  if(polyAnim){cancelAnimationFrame(polyAnim);polyAnim=null;btn.textContent='继续 →';return;}
   btn.textContent='暂停';
   let n=parseInt(nSlider.value,10);
+  if(n>=96){n=3;}
   const tick=()=>{
     n=Math.min(n+1,96);
     nSlider.value=n; drawPolygon(n);
-    if(n>=96){polyAnim=null;btn.textContent='自动增加 →';return;}
-    polyAnim=requestAnimationFrame(()=>setTimeout(tick,60));
+    if(n>=96){polyAnim=null;btn.textContent='再来一轮 →';return;}
+    polyAnim=requestAnimationFrame(()=>setTimeout(tick,55));
   };
   tick();
 });
 
 drawPolygon(6);
 
-/* 蒲丰投针 */
+/* ---------- 图 3：蒲丰投针 ---------- */
 const bCv=document.getElementById('buffonCanvas');
-const state={N:0,H:0,needles:[]};
+const bState={N:0,H:0,needles:[]};
 const L=0.8, D=1.0;
 
-function drawBuffon(){
-  const {ctx,w,h}=setupCanvas(bCv);
-  const rows=4, margin=34;
+function bGeom(){
+  const w=bCv.clientWidth, h=bCv.clientHeight;
+  const rows=4, margin=30;
   const gapPx=(h-margin*2)/(rows-1);
-  const scale=gapPx/D;
+  return {w,h,rows,margin,gapPx,scale:gapPx/D};
+}
 
-  ctx.strokeStyle='#d3d1cd'; ctx.lineWidth=1;
+function drawBuffon(){
+  const {ctx,w,h}=setup(bCv);
+  const {rows,margin,gapPx,scale}=bGeom();
+
+  ctx.strokeStyle='rgba(240,239,236,.20)'; ctx.lineWidth=1;
   for(let i=0;i<rows;i++){
     const y=margin+i*gapPx;
-    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+    line(ctx,0,y,w,y);
   }
-  state.needles.forEach(nd=>{
+  /* 间距标注 */
+  ctx.fillStyle='rgba(240,239,236,.26)'; ctx.font='9px '+MONO;
+  ctx.textAlign='left'; ctx.textBaseline='bottom';
+  ctx.fillText('d = 1   L = 0.8d', 8, margin-8);
+
+  bState.needles.forEach(nd=>{
     const x0=nd.x*scale, y0=margin+nd.y*scale;
     const x1=x0+Math.cos(nd.a)*L*scale, y1=y0+Math.sin(nd.a)*L*scale;
     ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1);
-    ctx.strokeStyle=nd.hit?'#111111':'rgba(17,17,17,.22)';
+    ctx.strokeStyle=nd.hit?'rgba(240,239,236,.92)':'rgba(240,239,236,.17)';
     ctx.lineWidth=nd.hit?1.6:1; ctx.stroke();
+    if(nd.hit) dot(ctx,(x0+x1)/2,(y0+y1)/2,1.4,INK);
   });
-  document.getElementById('bN').textContent=state.N;
-  document.getElementById('bH').textContent=state.H;
-  document.getElementById('bPi').textContent=state.H>0?(2*L*state.N/(D*state.H)).toFixed(5):'—';
+
+  document.getElementById('bN').textContent=bState.N;
+  document.getElementById('bH').textContent=bState.H;
+  if(bState.H>0){
+    const est=2*L*bState.N/(D*bState.H);
+    document.getElementById('bPi').textContent=est.toFixed(5);
+    const err=Math.abs(est-Math.PI)/Math.PI*100;
+    document.getElementById('bErr').textContent=err.toFixed(2)+' %';
+  }else{
+    document.getElementById('bPi').textContent='—';
+    document.getElementById('bErr').textContent='—';
+  }
+}
+
+function throwOne(x,y){
+  const {w,h,rows,margin,gapPx,scale}=bGeom();
+  if(x==null){ x=Math.random()*w/scale; y=Math.random()*(rows-1); }
+  const a=Math.random()*Math.PI*2;
+  const cy=y, dy=Math.abs(cy-Math.round(cy))*D;
+  const hit=dy<=(L/2)*Math.abs(Math.sin(a));
+  bState.needles.push({x,y,a,hit}); bState.N++; if(hit) bState.H++;
 }
 
 document.getElementById('dropBtn').addEventListener('click',()=>{
-  const w=bCv.clientWidth, h=bCv.clientHeight;
-  const rows=4, margin=34, gapPx=(h-margin*2)/(rows-1), scale=gapPx/D;
-  const maxY=(rows-1)*D, maxX=w/scale;
-  for(let k=0;k<1000;k++){
-    const x=Math.random()*maxX, y=Math.random()*maxY, a=Math.random()*Math.PI*2;
-    const cy=y/D, dy=Math.abs(cy-Math.round(cy))*D;
-    const hit=dy<=(L/2)*Math.abs(Math.sin(a));
-    state.needles.push({x,y,a,hit}); state.N++; if(hit) state.H++;
-  }
-  if(state.needles.length>2400) state.needles=state.needles.slice(-2400);
+  for(let k=0;k<1000;k++) throwOne();
+  if(bState.needles.length>2600) bState.needles=bState.needles.slice(-2600);
   drawBuffon();
 });
 
 document.getElementById('resetBtn').addEventListener('click',()=>{
-  state.N=0;state.H=0;state.needles=[];drawBuffon();
+  bState.N=0; bState.H=0; bState.needles=[]; drawBuffon();
 });
 
+bCv.addEventListener('click',ev=>{
+  const r=bCv.getBoundingClientRect();
+  const {scale,rows,margin,gapPx}=bGeom();
+  const px=ev.clientX-r.left, py=ev.clientY-r.top;
+  const dx=px/scale;
+  const dy=(py-margin)/gapPx*(D);
+  const y=Math.max(0.02,Math.min(rows-1-0.02,dy));
+  throwOne(dx,y);
+  drawBuffon();
+});
+
+for(let i=0;i<80;i++) throwOne();
 drawBuffon();
 
+/* 重绘 */
 let rz=null;
 window.addEventListener('resize',()=>{
   clearTimeout(rz);
