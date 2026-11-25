@@ -152,7 +152,9 @@
   .apps{display:grid;grid-template-columns:1.5fr 1fr;gap:34px 56px;max-width:880px;margin-top:24px}
   .apps h4{font-size:16px;margin:0 0 5px}
   .apps p{font-size:14px;line-height:1.85;color:#9b9a96}
-  .apps .item:first-child{grid-row:span 2}
+  .apps .item:first-child{grid-column:1/-1;padding-bottom:12px}
+  .apps .item:first-child h4{font-size:21px;margin-bottom:8px}
+  .apps .item:first-child p{font-size:15px;max-width:620px}
   .apps .item:last-child{grid-column:1/-1}
   .apps .idx{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.16em;
     display:block;margin-bottom:6px}
@@ -175,7 +177,7 @@
     .sec-body > *{grid-column:1}
     .cols2{grid-template-columns:1fr;gap:24px}
     .apps{grid-template-columns:1fr;gap:26px}
-    .apps .item:first-child{grid-row:auto}
+    .apps .item:first-child{grid-column:auto}
     .apps .item:last-child{grid-column:auto}
     .hrow{grid-template-columns:1fr;gap:2px}
     .hrow .yr{padding-top:0}
